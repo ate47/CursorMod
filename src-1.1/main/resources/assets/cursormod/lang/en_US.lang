@@ -1,0 +1,9 @@
+
+cursormod.config.xhotspot=X Cursor HotSpot
+cursormod.config.yhotspot=Y Cursor HotSpot
+cursormod.config.location=File location
+
+
+cursormod.gui.saveReload=Save and reload cursor
+cursormod.gui.error=Error while loading cursor
+cursormod.gui.cancel=Cancel
