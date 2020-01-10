@@ -1,0 +1,19 @@
+
+modLoader="javafml"
+loaderVersion="[25,)"
+issueTrackerURL="https://github.com/ate47/CursorMod/issues"
+[[mods]]
+	modId="customcursormod"
+	version="1.2.2"
+	displayName="Custom Cursor Mod"
+	displayURL="https://minecraft.curseforge.com/projects/cursor-mod"
+	authors="ATE47, KevinFernandezDominguez"
+	description="Change your cursor."
+
+[[dependencies.act]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.13.2]"
+    ordering="NONE"
+    side="BOTH"
+    
