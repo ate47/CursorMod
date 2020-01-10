@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import fr.atesab.customcursormod.CursorConfig;
 import fr.atesab.customcursormod.CursorType;
@@ -68,9 +68,9 @@ public abstract class GuiCursorConfig extends Screen {
 				cursorLocation.getHeight(), Color.WHITE.getRGB());
 		if (syncImageSize()) {
 			getMinecraft().getTextureManager().bindTexture(cursorConfig.getResourceLocation());
-			GuiUtils.drawGradientRect((float) blitOffset, width / 2 + 36, height / 2 - 64, width / 2 + 164,
+			GuiUtils.drawGradientRect((float) getBlitOffset(), width / 2 + 36, height / 2 - 64, width / 2 + 164,
 					height / 2 + 64, -1072689136, -804253680);
-			GlStateManager.color3f(1, 1, 1);
+			RenderSystem.color3f(1, 1, 1);
 			GuiUtils.drawScaledCustomSizeModalRect(width / 2 + 36, height / 2 - 64, 0, 0, imageWidth, imageHeight, 128,
 					128, imageWidth, imageHeight * numImage);
 			if (cursorConfig.getxHotSpot() >= 0 && cursorConfig.getxHotSpot() < imageWidth

@@ -8,7 +8,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import fr.atesab.customcursormod.CursorConfig;
 import fr.atesab.customcursormod.CursorMod;
@@ -49,9 +49,9 @@ public class GuiConfigCursorMod extends Screen {
 			int imageWidth = image.getWidth();
 			int imageHeight = image.getWidth();
 			int numImage = image.getHeight() / image.getWidth();
-			GuiUtils.drawGradientRect((float) blitOffset, posX, posY, posX + 20, posY + 20, -1072689136, -804253680);
+			GuiUtils.drawGradientRect((float) getBlitOffset(), posX, posY, posX + 20, posY + 20, -1072689136, -804253680);
 			getMinecraft().getTextureManager().bindTexture(cursorConfig.getResourceLocation());
-			GlStateManager.color3f(1.0F, 1.0F, 1.0F);
+			RenderSystem.color3f(1.0F, 1.0F, 1.0F);
 			GuiUtils.drawScaledCustomSizeModalRect(posX, posY, 0, 0, imageWidth, imageHeight, 20, 20, imageWidth,
 					imageHeight * numImage);
 		} catch (Exception e) {

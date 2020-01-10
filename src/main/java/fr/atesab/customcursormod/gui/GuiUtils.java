@@ -1,6 +1,7 @@
 package fr.atesab.customcursormod.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -18,17 +19,21 @@ public class GuiUtils {
 			int height, float tileWidth, float tileHeight) {
 		float f = 1.0F / tileWidth;
 		float f1 = 1.0F / tileHeight;
+		RenderSystem.enableAlphaTest();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
 		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		bufferbuilder.pos((double) x, (double) (y + height), 0.0D)
-				.tex((double) (u * f), (double) ((v + (float) vHeight) * f1)).endVertex();
-		bufferbuilder.pos((double) (x + width), (double) (y + height), 0.0D)
-				.tex((double) ((u + (float) uWidth) * f), (double) ((v + (float) vHeight) * f1)).endVertex();
-		bufferbuilder.pos((double) (x + width), (double) y, 0.0D)
-				.tex((double) ((u + (float) uWidth) * f), (double) (v * f1)).endVertex();
-		bufferbuilder.pos((double) x, (double) y, 0.0D).tex((double) (u * f), (double) (v * f1)).endVertex();
+		// func_225582_a_ = pos func_225583_a_ = tex
+		bufferbuilder.func_225582_a_((double) x, (double) (y + height), 0.0D)
+				.func_225583_a_((float) (u * f), (float) ((v + (float) vHeight) * f1)).endVertex();
+		bufferbuilder.func_225582_a_((double) (x + width), (double) (y + height), 0.0D)
+				.func_225583_a_((float) ((u + (float) uWidth) * f), (float) ((v + (float) vHeight) * f1)).endVertex();
+		bufferbuilder.func_225582_a_((double) (x + width), (double) y, 0.0D)
+				.func_225583_a_((float) ((u + (float) uWidth) * f), (float) (v * f1)).endVertex();
+		bufferbuilder.func_225582_a_((double) x, (double) y, 0.0D).func_225583_a_((float) (u * f), (float) (v * f1))
+				.endVertex();
 		tessellator.draw();
+		RenderSystem.disableAlphaTest();
 	}
 
 	/**
@@ -45,24 +50,29 @@ public class GuiUtils {
 		float f5 = (float) (endColor >> 16 & 255) / 255.0F;
 		float f6 = (float) (endColor >> 8 & 255) / 255.0F;
 		float f7 = (float) (endColor & 255) / 255.0F;
-		GlStateManager.disableTexture();
-		GlStateManager.enableBlend();
-		GlStateManager.disableAlphaTest();
-		GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
+		RenderSystem.disableTexture();
+		RenderSystem.enableBlend();
+		RenderSystem.disableAlphaTest();
+		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
 				GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
 				GlStateManager.DestFactor.ZERO);
-		GlStateManager.shadeModel(7425);
+		RenderSystem.shadeModel(7425);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		// func_225582_a_ = pos func_227885_a_ = color
 		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-		bufferbuilder.pos((double) right, (double) top, (double) zLevel).color(f1, f2, f3, f).endVertex();
-		bufferbuilder.pos((double) left, (double) top, (double) zLevel).color(f1, f2, f3, f).endVertex();
-		bufferbuilder.pos((double) left, (double) bottom, (double) zLevel).color(f5, f6, f7, f4).endVertex();
-		bufferbuilder.pos((double) right, (double) bottom, (double) zLevel).color(f5, f6, f7, f4).endVertex();
+		bufferbuilder.func_225582_a_((double) right, (double) top, (double) zLevel).func_227885_a_(f1, f2, f3, f)
+				.endVertex();
+		bufferbuilder.func_225582_a_((double) left, (double) top, (double) zLevel).func_227885_a_(f1, f2, f3, f)
+				.endVertex();
+		bufferbuilder.func_225582_a_((double) left, (double) bottom, (double) zLevel).func_227885_a_(f5, f6, f7, f4)
+				.endVertex();
+		bufferbuilder.func_225582_a_((double) right, (double) bottom, (double) zLevel).func_227885_a_(f5, f6, f7, f4)
+				.endVertex();
 		tessellator.draw();
-		GlStateManager.shadeModel(7424);
-		GlStateManager.disableBlend();
-		GlStateManager.enableAlphaTest();
-		GlStateManager.enableTexture();
+		RenderSystem.shadeModel(7424);
+		RenderSystem.disableBlend();
+		RenderSystem.enableAlphaTest();
+		RenderSystem.enableTexture();
 	}
 }
