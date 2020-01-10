@@ -1,6 +1,6 @@
 package fr.atesab.customcursormod;
 
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 @FunctionalInterface
 public interface CursorTester {
 	/**
@@ -12,5 +12,5 @@ public interface CursorTester {
 	 * @param renderPartialTicks 
 	 * @return if the cursor need to be change
 	 */
-	public boolean testCursor(CursorType newCursorType, GuiScreen currentScreen, int mouseX, int mouseY, float renderPartialTicks);
+	public boolean testCursor(CursorType newCursorType, Screen currentScreen, int mouseX, int mouseY, float renderPartialTicks);
 }

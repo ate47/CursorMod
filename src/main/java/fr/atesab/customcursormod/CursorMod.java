@@ -12,19 +12,20 @@ import java.util.logging.Logger;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.MemoryUtil;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+
 import fr.atesab.customcursormod.gui.GuiConfig;
 import fr.atesab.customcursormod.gui.GuiSelectZone;
+import fr.atesab.customcursormod.gui.GuiUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.init.Items;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -39,6 +40,7 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.gui.GuiModList;
+import net.minecraftforge.fml.client.gui.GuiSlotModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -142,18 +144,22 @@ public class CursorMod {
 				CursorType.CROSS);
 	}
 
-	private void checkModList(GuiScreen screen) {
+	private void checkModList(Screen screen) {
 		// enabling the config button
 		if (screen instanceof GuiModList) {
-			ModInfo info = getFirstFieldOfTypeInto(ModInfo.class, screen);
-			if (info != null) {
-				Optional<? extends ModContainer> op = ModList.get().getModContainerById(info.getModId());
-				if (op.isPresent()) {
-					boolean value = op.get().getCustomExtension(ExtensionPoint.CONFIGGUIFACTORY).isPresent();
-					String config = I18n.format("fml.menu.mods.config");
-					for (IGuiEventListener b : screen.getChildren())
-						if (b instanceof GuiButton && ((GuiButton) b).displayString.equals(config))
-							((GuiButton) b).enabled = value;
+			/* GuiSlotModList.ModEntry */ Object entry = getFirstFieldOfTypeInto(
+					GuiSlotModList.class.getDeclaredClasses()[0], screen);
+			if (entry != null) {
+				ModInfo info = getFirstFieldOfTypeInto(ModInfo.class, entry);
+				if (info != null) {
+					Optional<? extends ModContainer> op = ModList.get().getModContainerById(info.getModId());
+					if (op.isPresent()) {
+						boolean value = op.get().getCustomExtension(ExtensionPoint.CONFIGGUIFACTORY).isPresent();
+						String config = I18n.format("fml.menu.mods.config");
+						for (IGuiEventListener b : screen.children())
+							if (b instanceof Button && ((Button) b).getMessage().equals(config))
+								((Button) b).active = value;
+					}
 				}
 			}
 		}
@@ -191,19 +197,19 @@ public class CursorMod {
 		return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
 	}
 
-	private boolean isHoverButton(int mouseX, int mouseY, GuiButton button) {
-		return button != null && button.visible && button.enabled
-				&& isHover(mouseX, mouseY, button.x, button.y, button.width, button.height);
+	private boolean isHoverButton(int mouseX, int mouseY, Button button) {
+		return button != null && button.visible && button.active
+				&& isHover(mouseX, mouseY, button.x, button.y, button.getWidth(), button.getHeight());
 	}
 
-	private boolean isHoverTextField(int mouseX, int mouseY, GuiTextField textField) {
+	private boolean isHoverTextField(int mouseX, int mouseY, TextFieldWidget textField) {
 		return textField != null && textField.getVisible()
-				&& isHover(mouseX, mouseY, textField.x, textField.y, textField.width, textField.height);
+				&& isHover(mouseX, mouseY, textField.x, textField.y, textField.getWidth(), textField.getHeight());
 	}
 
 	@SubscribeEvent
 	public void onDrawScreen(DrawScreenEvent.Post ev) {
-		GuiScreen gui = ev.getGui();
+		Screen gui = ev.getGui();
 		CursorType newCursorType = CursorType.POINTER;
 		if (config.dynamicCursor) {
 			for (Field[] fa : getDeclaredField(gui.getClass()))
@@ -213,11 +219,11 @@ public class CursorMod {
 						Object o = f.get(gui);
 						if (o == null)
 							continue;
-						else if (o instanceof GuiTextField) {
-							if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (GuiTextField) o))
+						else if (o instanceof TextFieldWidget) {
+							if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (TextFieldWidget) o))
 								newCursorType = CursorType.BEAM;
-						} else if (o instanceof GuiButton) {
-							if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (GuiButton) o))
+						} else if (o instanceof Button) {
+							if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (Button) o))
 								newCursorType = CursorType.HAND;
 						} else if (o instanceof GuiSelectZone) {
 							GuiSelectZone selectZone = (GuiSelectZone) o;
@@ -226,11 +232,11 @@ public class CursorMod {
 								newCursorType = CursorType.CROSS;
 						} else if (o instanceof List) {
 							for (Object e : (List<?>) o)
-								if (e instanceof GuiButton) {
-									if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (GuiButton) e))
+								if (e instanceof Button) {
+									if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (Button) e))
 										newCursorType = CursorType.HAND;
-								} else if (e instanceof GuiTextField) {
-									if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (GuiTextField) e))
+								} else if (e instanceof TextFieldWidget) {
+									if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (TextFieldWidget) e))
 										newCursorType = CursorType.BEAM;
 								} else if (e instanceof GuiSelectZone) {
 									GuiSelectZone selectZone = (GuiSelectZone) e;
@@ -244,16 +250,16 @@ public class CursorMod {
 					} catch (Exception e) {
 					}
 				}
-			if (gui instanceof GuiContainer) {
-				GuiContainer container = (GuiContainer) gui;
-				if (gui.mc.player.inventory.getItemStack() != null
-						&& !gui.mc.player.inventory.getItemStack().getItem().equals(Items.AIR))
+			if (gui instanceof ContainerScreen) {
+				ContainerScreen<?> container = (ContainerScreen<?>) gui;
+				if (gui.getMinecraft().player.inventory.getItemStack() != null
+						&& !gui.getMinecraft().player.inventory.getItemStack().getItem().equals(Items.AIR))
 					newCursorType = CursorType.HAND_GRAB;
 				else if (container.getSlotUnderMouse() != null && container.getSlotUnderMouse().getHasStack())
 					newCursorType = CursorType.HAND;
-			} else if (gui instanceof GuiChat) {
-				ITextComponent ichatcomponent = gui.mc.ingameGUI.getChatGUI()
-						.func_194817_a(gui.mc.mouseHelper.getMouseX(), gui.mc.mouseHelper.getMouseY()); // getChatComponent
+			} else if (gui instanceof ChatScreen) {
+				ITextComponent ichatcomponent = gui.getMinecraft().ingameGUI.getChatGUI().getTextComponent(
+						gui.getMinecraft().mouseHelper.getMouseX(), gui.getMinecraft().mouseHelper.getMouseY());
 				if (ichatcomponent != null && ichatcomponent.getStyle().getClickEvent() != null)
 					newCursorType = CursorType.HAND;
 			}
@@ -271,10 +277,10 @@ public class CursorMod {
 				CursorClick cursorClick = iterator.next();
 				int posX = (int) cursorClick.getPosX();
 				int posY = (int) cursorClick.getPosY();
-				gui.mc.getTextureManager().bindTexture(
+				gui.getMinecraft().getTextureManager().bindTexture(
 						new ResourceLocation("textures/gui/click_" + (2 - cursorClick.getTime() / 4) + ".png"));
 				GlStateManager.color3f(1.0F, 1.0F, 1.0F);
-				Gui.drawScaledCustomSizeModalRect(posX - 8, posY - 8, 0, 0, 16, 16, 16, 16, 16, 16);
+				GuiUtils.drawScaledCustomSizeModalRect(posX - 8, posY - 8, 0, 0, 16, 16, 16, 16, 16, 16);
 				cursorClick.descreaseTime();
 				if (cursorClick.getTime() <= 0) {
 					iterator.remove();

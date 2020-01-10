@@ -1,6 +1,9 @@
 {
-    "cursormod.config.xhotspot": "X HotSpot",
+	"cursormod.gui.config": "Config menu",
+	"cursormod.gui.cursorList": "Cursors config menu",
+	"cursormod.gui.configCursor": "Cursor config menu",
 
+    "cursormod.config.xhotspot": "X HotSpot",
     "cursormod.config.yhotspot": "Y HotSpot",
     "cursormod.config.location": "File location",
     "cursormod.config.dynCursor": "Dynamic Cursor",

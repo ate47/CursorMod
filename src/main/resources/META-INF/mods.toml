@@ -1,6 +1,6 @@
 
 modLoader="javafml"
-loaderVersion="[25,)"
+loaderVersion="[26,)"
 issueTrackerURL="https://github.com/ate47/CursorMod/issues"
 [[mods]]
 	modId="customcursormod"
