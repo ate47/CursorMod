@@ -34,6 +34,8 @@ import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.MouseClickedEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModContainer;
@@ -42,7 +44,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.gui.GuiModList;
 import net.minecraftforge.fml.client.gui.GuiSlotModList;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -146,7 +147,7 @@ public class CursorMod {
 
 	private void checkModList(Screen screen) {
 		// enabling the config button
-		if (screen instanceof GuiModList) {
+		if (screen != null && screen instanceof GuiModList) {
 			/* GuiSlotModList.ModEntry */ Object entry = getFirstFieldOfTypeInto(
 					GuiSlotModList.class.getDeclaredClasses()[0], screen);
 			if (entry != null) {
@@ -296,20 +297,20 @@ public class CursorMod {
 	}
 
 	@SubscribeEvent
+	public void onGuiCloses(ClientTickEvent ev) {
+		if (ev.phase == TickEvent.Phase.END)
+			checkModList(Minecraft.getInstance().currentScreen);
+	}
+
+	@SubscribeEvent
 	public void onInitScreen(InitGuiEvent.Post ev) {
 		forceNextCursor();
-		checkModList(ev.getGui());
 	}
 
 	@SubscribeEvent
 	public void onMouseClicked(MouseClickedEvent.Pre ev) {
 		if (ev.getButton() == 0 && config.clickAnimation)
 			cursorClicks.add(new CursorClick(11, ev.getMouseX(), ev.getMouseY()));
-	}
-
-	@SubscribeEvent
-	public void onMouseClicked(MouseClickedEvent.Post ev) {
-		checkModList(ev.getGui());
 	}
 
 	private void setup(FMLLoadCompleteEvent ev) {
