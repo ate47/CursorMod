@@ -41,8 +41,8 @@ import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.client.gui.GuiModList;
-import net.minecraftforge.fml.client.gui.GuiSlotModList;
+import net.minecraftforge.fml.client.gui.ModListScreen;
+import net.minecraftforge.fml.client.gui.ModListWidget;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -147,9 +147,9 @@ public class CursorMod {
 
 	private void checkModList(Screen screen) {
 		// enabling the config button
-		if (screen != null && screen instanceof GuiModList) {
+		if (screen != null && screen instanceof ModListScreen) {
 			/* GuiSlotModList.ModEntry */ Object entry = getFirstFieldOfTypeInto(
-					GuiSlotModList.class.getDeclaredClasses()[0], screen);
+					ModListWidget.class.getDeclaredClasses()[0], screen);
 			if (entry != null) {
 				ModInfo info = getFirstFieldOfTypeInto(ModInfo.class, entry);
 				if (info != null) {
