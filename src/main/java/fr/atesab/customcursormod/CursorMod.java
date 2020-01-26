@@ -23,6 +23,7 @@ import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Items;
@@ -198,7 +199,7 @@ public class CursorMod {
 		return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
 	}
 
-	private boolean isHoverButton(int mouseX, int mouseY, Button button) {
+	private boolean isHoverButton(int mouseX, int mouseY, AbstractButton button) {
 		return button != null && button.visible && button.active
 				&& isHover(mouseX, mouseY, button.x, button.y, button.getWidth(), button.getHeight());
 	}
@@ -223,7 +224,7 @@ public class CursorMod {
 						else if (o instanceof TextFieldWidget) {
 							if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (TextFieldWidget) o))
 								newCursorType = CursorType.BEAM;
-						} else if (o instanceof Button) {
+						} else if (o instanceof AbstractButton) {
 							if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (Button) o))
 								newCursorType = CursorType.HAND;
 						} else if (o instanceof GuiSelectZone) {
@@ -233,8 +234,8 @@ public class CursorMod {
 								newCursorType = CursorType.CROSS;
 						} else if (o instanceof List) {
 							for (Object e : (List<?>) o)
-								if (e instanceof Button) {
-									if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (Button) e))
+								if (e instanceof AbstractButton) {
+									if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (AbstractButton) e))
 										newCursorType = CursorType.HAND;
 								} else if (e instanceof TextFieldWidget) {
 									if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (TextFieldWidget) e))
