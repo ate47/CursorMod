@@ -1,3 +1,87 @@
+Build: 1.15.2-31.0.1 - Thu Jan 23 21:59:18 GMT 2020
+	David Quintana:
+		Hook "gui_light" value from the model into the IBakedModel implementations.
+		Apply some of the suggestions from the 1.14 models PR.
+
+=========
+Build: 1.15.2-31.0.0 - Wed Jan 22 21:47:51 GMT 2020
+	lex:
+		1.15.2 Initial Update
+
+=========
+Build: 1.15.1-30.0.51 - Wed Jan 22 21:10:07 GMT 2020
+	ichttt:
+		Cleanup fml packages removing old deprecated classes related to GUIs/Configs and fix HoverChecker (#6437)
+		
+		Fixed ModListWidget name to avoid confusion and collision.
+		Delete CheckBox, as vanilla has it's own CheckBox now which looks much better
+		Rename ModConfigEvent.ConfigReloading to ModConfigEvent.Reloading
+
+=========
+Build: 1.15.1-30.0.50 - Wed Jan 22 20:38:22 GMT 2020
+	12281102+Aeltumn:
+		Fixed parameter name issue in ISTER rename. #6461 (#6468)
+
+=========
+Build: 1.15.1-30.0.49 - Wed Jan 22 19:56:16 GMT 2020
+	lex:
+		Fix default widget foreground color.
+
+=========
+Build: 1.15.1-30.0.48 - Wed Jan 22 19:30:35 GMT 2020
+	diesieben07:
+		Use extended version of getLightValue in all places (#6433)
+
+	Bward7864:
+		Fixed RenderTypeLookup loosing mappings for registry replacements. (#6452)
+
+	wynprice999:
+		Fixed rounding issue with entity navigation fix (#6455) (#6456)
+
+	37298044+Cadiboo:
+		Fix Widget Foreground Color not allowing pure black (#6460)
+
+	12281102+Aeltumn:
+		Updated method names referencing ItemStackTileEntityRenderer (#6461)
+
+=========
+Build: 1.15.1-30.0.43 - Wed Jan 22 19:22:15 GMT 2020
+	scottehboeh:
+		[1.15.x] Added entity nameplate rendering event hook (#6416)
+
+=========
+Build: 1.15.1-30.0.42 - Tue Jan 21 03:47:02 GMT 2020
+	tterrag:
+		Remove emissive items hook, add small utility for bakedquad lighting
+
+=========
+Build: 1.15.1-30.0.41 - Thu Jan 16 02:30:04 GMT 2020
+	David Quintana:
+		Fix breaking overlay weirdness. applyBakedNormals was not transforming the baked normals when applying them. Fixes #6432
+
+=========
+Build: 1.15.1-30.0.40 - Thu Jan 16 00:30:10 GMT 2020
+	12281102+Aeltumn:
+		[1.15] Add new InputEvent.ClickInputEvent, addresses #5802 (#6047)
+
+=========
+Build: 1.15.1-30.0.39 - Mon Jan 13 22:21:01 GMT 2020
+	David Quintana:
+		Fix dark spots in fullbright quad rendering.
+		Fix multi-layer model not declaring dependency on the particle texture.
+		Fix mistake in 2c054fca which I didn't intend to push when I did.
+
+=========
+Build: 1.15.1-30.0.38 - Mon Jan 13 18:39:06 GMT 2020
+	David Quintana:
+		Attempt to fix fullbright lighting.
+		
+		Fix lightmap value calculation.
+
+	David Quintana:
+		Fix multi-layer model loader to actually work in a sane way. No more "base" model involved, and now transforms and overrides work as expected.
+
+=========
 Build: 1.15.1-30.0.36 - Thu Jan 09 22:28:02 GMT 2020
 	tterrag:
 		Add constructor for FishBucketItem that accepts suppliers

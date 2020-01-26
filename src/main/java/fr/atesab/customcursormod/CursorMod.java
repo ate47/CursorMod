@@ -23,6 +23,7 @@ import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Items;
@@ -41,8 +42,8 @@ import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.client.gui.ModListScreen;
-import net.minecraftforge.fml.client.gui.ModListWidget;
+import net.minecraftforge.fml.client.gui.screen.ModListScreen;
+import net.minecraftforge.fml.client.gui.widget.ModListWidget;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -148,10 +149,10 @@ public class CursorMod {
 	private void checkModList(Screen screen) {
 		// enabling the config button
 		if (screen != null && screen instanceof ModListScreen) {
-			/* GuiSlotModList.ModEntry */ Object entry = getFirstFieldOfTypeInto(
-					ModListWidget.class.getDeclaredClasses()[0], screen);
+			ModListWidget.ModEntry entry = getFirstFieldOfTypeInto(
+					ModListWidget.ModEntry.class, screen);
 			if (entry != null) {
-				ModInfo info = getFirstFieldOfTypeInto(ModInfo.class, entry);
+				ModInfo info = entry.getInfo();
 				if (info != null) {
 					Optional<? extends ModContainer> op = ModList.get().getModContainerById(info.getModId());
 					if (op.isPresent()) {
@@ -198,7 +199,7 @@ public class CursorMod {
 		return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
 	}
 
-	private boolean isHoverButton(int mouseX, int mouseY, Button button) {
+	private boolean isHoverButton(int mouseX, int mouseY, AbstractButton button) {
 		return button != null && button.visible && button.active
 				&& isHover(mouseX, mouseY, button.x, button.y, button.getWidth(), button.getHeight());
 	}
@@ -223,7 +224,7 @@ public class CursorMod {
 						else if (o instanceof TextFieldWidget) {
 							if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (TextFieldWidget) o))
 								newCursorType = CursorType.BEAM;
-						} else if (o instanceof Button) {
+						} else if (o instanceof AbstractButton) {
 							if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (Button) o))
 								newCursorType = CursorType.HAND;
 						} else if (o instanceof GuiSelectZone) {
@@ -231,10 +232,10 @@ public class CursorMod {
 							if (isHover(ev.getMouseX(), ev.getMouseY(), selectZone.xPosition, selectZone.yPosition,
 									selectZone.width, selectZone.height) && selectZone.enable)
 								newCursorType = CursorType.CROSS;
-						} else if (o instanceof List) {
-							for (Object e : (List<?>) o)
-								if (e instanceof Button) {
-									if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (Button) e))
+						} else if (o instanceof Iterable) {
+							for (Object e : (Iterable<?>) o)
+								if (e instanceof AbstractButton) {
+									if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (AbstractButton) e))
 										newCursorType = CursorType.HAND;
 								} else if (e instanceof TextFieldWidget) {
 									if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (TextFieldWidget) e))

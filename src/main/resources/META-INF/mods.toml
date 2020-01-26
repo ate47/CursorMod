@@ -1,6 +1,6 @@
 
 modLoader="javafml"
-loaderVersion="[30,)"
+loaderVersion="[31,)"
 issueTrackerURL="https://github.com/ate47/CursorMod/issues"
 [[mods]]
 	modId="customcursormod"
@@ -13,7 +13,7 @@ issueTrackerURL="https://github.com/ate47/CursorMod/issues"
 [[dependencies.customcursormod]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.1]"
+    versionRange="[1.15.2]"
     ordering="NONE"
     side="BOTH"
     

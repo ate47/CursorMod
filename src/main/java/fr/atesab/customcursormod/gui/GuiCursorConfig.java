@@ -99,7 +99,7 @@ public abstract class GuiCursorConfig extends Screen {
 		cursorLocation = new TextFieldWidget(font, width / 2 - 99, height / 2 + 1, 124, 18, "");
 		cursorLocation.setMaxStringLength(Integer.MAX_VALUE);
 		updateCursorValues(cursorConfig);
-		selectZone = new GuiSelectZone(width / 2 + 36, height / 2 - 64, 128, 128);
+		children.add(selectZone = new GuiSelectZone(width / 2 + 36, height / 2 - 64, 128, 128));
 		addButton(new Button(width / 2 - 174, height / 2 + 21, 200, 20, I18n.format("cursormod.gui.default"),
 				b -> updateCursorValues(type.getDefaultConfig())));
 
