@@ -15,24 +15,21 @@ public class GuiUtils {
 	 * Draws a scaled, textured, tiled modal rect at z = 0. This method isn't used
 	 * anywhere in vanilla code.
 	 */
+	@SuppressWarnings("deprecation")
 	public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width,
 			int height, float tileWidth, float tileHeight) {
 		float f = 1.0F / tileWidth;
 		float f1 = 1.0F / tileHeight;
 		RenderSystem.enableAlphaTest();
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		BufferBuilder bufferbuilder = tessellator.getBuilder();
 		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		// func_225582_a_ = pos func_225583_a_ = tex
-		bufferbuilder.func_225582_a_((double) x, (double) (y + height), 0.0D)
-				.func_225583_a_((float) (u * f), (float) ((v + (float) vHeight) * f1)).endVertex();
-		bufferbuilder.func_225582_a_((double) (x + width), (double) (y + height), 0.0D)
-				.func_225583_a_((float) ((u + (float) uWidth) * f), (float) ((v + (float) vHeight) * f1)).endVertex();
-		bufferbuilder.func_225582_a_((double) (x + width), (double) y, 0.0D)
-				.func_225583_a_((float) ((u + (float) uWidth) * f), (float) (v * f1)).endVertex();
-		bufferbuilder.func_225582_a_((double) x, (double) y, 0.0D).func_225583_a_((float) (u * f), (float) (v * f1))
-				.endVertex();
-		tessellator.draw();
+		bufferbuilder.vertex((double) x, (double) (y + height), 0.0D).uv((u * f), ((v + vHeight) * f1)).endVertex();
+		bufferbuilder.vertex((double) (x + width), (double) (y + height), 0.0D)
+				.uv(((u + uWidth) * f), ((v + (float) vHeight) * f1)).endVertex();
+		bufferbuilder.vertex((double) (x + width), (double) y, 0.0D).uv(((u + uWidth) * f), v * f1).endVertex();
+		bufferbuilder.vertex((double) x, (double) y, 0.0D).uv(u * f, v * f1).endVertex();
+		tessellator.end();
 		RenderSystem.disableAlphaTest();
 	}
 
@@ -40,6 +37,7 @@ public class GuiUtils {
 	 * Draws a rectangle with a vertical gradient between the specified colors (ARGB
 	 * format). Args : x1, y1, x2, y2, topColor, bottomColor
 	 */
+	@SuppressWarnings("deprecation")
 	public static void drawGradientRect(float zLevel, int left, int top, int right, int bottom, int startColor,
 			int endColor) {
 		float f = (float) (startColor >> 24 & 255) / 255.0F;
@@ -58,18 +56,17 @@ public class GuiUtils {
 				GlStateManager.DestFactor.ZERO);
 		RenderSystem.shadeModel(7425);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferbuilder = tessellator.getBuffer();
-		// func_225582_a_ = pos func_227885_a_ = color
+		BufferBuilder bufferbuilder = tessellator.getBuilder();
 		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-		bufferbuilder.func_225582_a_((double) right, (double) top, (double) zLevel).func_227885_a_(f1, f2, f3, f)
+		bufferbuilder.vertex((double) right, (double) top, (double) zLevel).color(f1, f2, f3, f)
 				.endVertex();
-		bufferbuilder.func_225582_a_((double) left, (double) top, (double) zLevel).func_227885_a_(f1, f2, f3, f)
+		bufferbuilder.vertex((double) left, (double) top, (double) zLevel).color(f1, f2, f3, f)
 				.endVertex();
-		bufferbuilder.func_225582_a_((double) left, (double) bottom, (double) zLevel).func_227885_a_(f5, f6, f7, f4)
+		bufferbuilder.vertex((double) left, (double) bottom, (double) zLevel).color(f5, f6, f7, f4)
 				.endVertex();
-		bufferbuilder.func_225582_a_((double) right, (double) bottom, (double) zLevel).func_227885_a_(f5, f6, f7, f4)
+		bufferbuilder.vertex((double) right, (double) bottom, (double) zLevel).color(f5, f6, f7, f4)
 				.endVertex();
-		tessellator.draw();
+		tessellator.end();
 		RenderSystem.shadeModel(7424);
 		RenderSystem.disableBlend();
 		RenderSystem.enableAlphaTest();

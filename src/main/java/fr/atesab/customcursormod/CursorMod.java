@@ -28,7 +28,7 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
@@ -62,7 +62,7 @@ public class CursorMod {
 	private static CursorType currentCursorType = CursorType.POINTER;
 	private static Map<CursorType, CursorConfig> cursors = new HashMap<CursorType, CursorConfig>();
 	private static List<CursorClick> cursorClicks = new ArrayList<CursorClick>();
-	private static Configuration config;
+	private static Configuration config = new Configuration();
 
 	private static void changeCursor(CursorType cursor) {
 		changeCursor(cursor, forceNextCursor);
@@ -77,7 +77,7 @@ public class CursorMod {
 		long cursorPtr = cursorConfig.getCursor();
 		if (cursorPtr == MemoryUtil.NULL)
 			throw new NullPointerException();
-		GLFW.glfwSetCursor(Minecraft.getInstance().func_228018_at_().getHandle(), cursorPtr); // getMainWindow
+		GLFW.glfwSetCursor(Minecraft.getInstance().getWindow().getWindow(), cursorPtr);
 	}
 
 	/**
@@ -138,11 +138,10 @@ public class CursorMod {
 	public CursorMod() {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		MinecraftForge.EVENT_BUS.register(this);
-		config = new Configuration();
 		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY,
 				() -> (mc, parent) -> new GuiConfig(parent));
 
-		registerCursor(currentCursorType = CursorType.POINTER, CursorType.HAND, CursorType.HAND_GRAB, CursorType.BEAM,
+		registerCursor(currentCursorType, CursorType.HAND, CursorType.HAND_GRAB, CursorType.BEAM,
 				CursorType.CROSS);
 	}
 
@@ -157,9 +156,9 @@ public class CursorMod {
 					Optional<? extends ModContainer> op = ModList.get().getModContainerById(info.getModId());
 					if (op.isPresent()) {
 						boolean value = op.get().getCustomExtension(ExtensionPoint.CONFIGGUIFACTORY).isPresent();
-						String config = I18n.format("fml.menu.mods.config");
+						String configText = I18n.get("fml.menu.mods.config");
 						for (IGuiEventListener b : screen.children())
-							if (b instanceof Button && ((Button) b).getMessage().equals(config))
+							if (b instanceof Button && ((Button) b).getMessage().getString().equals(configText))
 								((Button) b).active = value;
 					}
 				}
@@ -205,11 +204,12 @@ public class CursorMod {
 	}
 
 	private boolean isHoverTextField(int mouseX, int mouseY, TextFieldWidget textField) {
-		return textField != null && textField.getVisible()
+		return textField != null && textField.isVisible()
 				&& isHover(mouseX, mouseY, textField.x, textField.y, textField.getWidth(), textField.getHeight());
 	}
 
 	@SubscribeEvent
+	@SuppressWarnings("deprecation")
 	public void onDrawScreen(DrawScreenEvent.Post ev) {
 		Screen gui = ev.getGui();
 		CursorType newCursorType = CursorType.POINTER;
@@ -254,15 +254,18 @@ public class CursorMod {
 				}
 			if (gui instanceof ContainerScreen) {
 				ContainerScreen<?> container = (ContainerScreen<?>) gui;
-				if (gui.getMinecraft().player.inventory.getItemStack() != null
-						&& !gui.getMinecraft().player.inventory.getItemStack().getItem().equals(Items.AIR))
+				if (gui.getMinecraft().player.inventory.getCarried() != null
+						&& !gui.getMinecraft().player.inventory.getCarried().getItem().equals(Items.AIR))
 					newCursorType = CursorType.HAND_GRAB;
-				else if (container.getSlotUnderMouse() != null && container.getSlotUnderMouse().getHasStack())
+				else if (container.getSlotUnderMouse() != null && container.getSlotUnderMouse().hasItem())
 					newCursorType = CursorType.HAND;
 			} else if (gui instanceof ChatScreen) {
-				ITextComponent ichatcomponent = gui.getMinecraft().ingameGUI.getChatGUI().getTextComponent(
-						gui.getMinecraft().mouseHelper.getMouseX(), gui.getMinecraft().mouseHelper.getMouseY());
-				if (ichatcomponent != null && ichatcomponent.getStyle().getClickEvent() != null)
+				Minecraft mc = gui.getMinecraft();
+				int mx = (int)(mc.mouseHandler.xpos() * (double)mc.getWindow().getGuiScaledWidth() / (double)mc.getWindow().getScreenWidth());
+				int my = (int)(mc.mouseHandler.ypos() * (double)mc.getWindow().getGuiScaledHeight() / (double)mc.getWindow().getScreenHeight());
+				Style style = mc.gui.getChat().getClickedComponentStyleAt(
+					mx, my);
+				if (style != null && style.getClickEvent() != null)
 					newCursorType = CursorType.HAND;
 			}
 			for (CursorType cursorType : cursors.keySet())
@@ -279,8 +282,8 @@ public class CursorMod {
 				CursorClick cursorClick = iterator.next();
 				int posX = (int) cursorClick.getPosX();
 				int posY = (int) cursorClick.getPosY();
-				gui.getMinecraft().getTextureManager().bindTexture(
-						new ResourceLocation("textures/gui/click_" + (2 - cursorClick.getTime() / 4) + ".png"));
+				gui.getMinecraft().getTextureManager().bind(
+						new ResourceLocation("textures/gui/click_" + (2 - cursorClick.getTime() / 3) + ".png"));
 				RenderSystem.color3f(1.0F, 1.0F, 1.0F);
 				GuiUtils.drawScaledCustomSizeModalRect(posX - 8, posY - 8, 0, 0, 16, 16, 16, 16, 16, 16);
 				cursorClick.descreaseTime();
@@ -293,14 +296,14 @@ public class CursorMod {
 
 	@SubscribeEvent
 	public void onGuiCloses(TickEvent ev) {
-		if (cursorClicks.size() != 0 && Minecraft.getInstance().currentScreen == null)
+		if (!cursorClicks.isEmpty() && Minecraft.getInstance().screen== null)
 			cursorClicks.clear();
 	}
 
 	@SubscribeEvent
 	public void onGuiCloses(ClientTickEvent ev) {
 		if (ev.phase == TickEvent.Phase.END)
-			checkModList(Minecraft.getInstance().currentScreen);
+			checkModList(Minecraft.getInstance().screen);
 	}
 
 	@SubscribeEvent
@@ -311,7 +314,7 @@ public class CursorMod {
 	@SubscribeEvent
 	public void onMouseClicked(MouseClickedEvent.Pre ev) {
 		if (ev.getButton() == 0 && config.clickAnimation)
-			cursorClicks.add(new CursorClick(11, ev.getMouseX(), ev.getMouseY()));
+			cursorClicks.add(new CursorClick(6, ev.getMouseX(), ev.getMouseY()));
 	}
 
 	private void setup(FMLLoadCompleteEvent ev) {

@@ -1,6 +1,7 @@
 package fr.atesab.customcursormod;
 
-import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 /**
  * a basic cursor type, use {@link CursorMod#registerCursor(CursorType...)} to
@@ -29,7 +30,7 @@ public class CursorType {
 			new CursorConfig("textures/gui/customcursor_cross.png", 16, 16));
 
 	private CursorConfig defaultConfig;
-	private String localizedName;
+	private TranslationTextComponent localizedName;
 
 	private String configName;
 	private CursorTester cursorTester;
@@ -46,7 +47,7 @@ public class CursorType {
 	public CursorType(String configName, String localizedName, CursorConfig defaultConfig, CursorTester cursorTester,
 			int animationDelays) {
 		this.configName = configName;
-		this.localizedName = localizedName;
+		this.localizedName = new TranslationTextComponent(localizedName);
 		this.defaultConfig = defaultConfig;
 		this.cursorTester = cursorTester;
 		this.animationDelays = animationDelays;
@@ -69,10 +70,14 @@ public class CursorType {
 	}
 
 	public String getLocalizedName() {
-		return localizedName;
+		return localizedName.getKey();
 	}
 
 	public String getName() {
-		return I18n.format(localizedName);
+		return localizedName.getString();
+	}
+
+	public ITextComponent getTranslation() {
+		return localizedName; 
 	}
 }

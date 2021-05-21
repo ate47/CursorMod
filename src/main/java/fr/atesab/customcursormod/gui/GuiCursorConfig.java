@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import fr.atesab.customcursormod.CursorConfig;
@@ -14,9 +15,12 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public abstract class GuiCursorConfig extends Screen {
+	private static final ITextComponent EMPTY = new StringTextComponent("");
 	private Screen parent;
 	private TextFieldWidget xhotspot;
 	private TextFieldWidget yhotspot;
@@ -39,35 +43,36 @@ public abstract class GuiCursorConfig extends Screen {
 
 	private void updateCursorValues(CursorConfig cursorConfig) {
 		this.cursorConfig = cursorConfig;
-		xhotspot.setText(String.valueOf(cursorConfig.getxHotSpot()));
-		yhotspot.setText(String.valueOf(cursorConfig.getyHotSpot()));
-		cursorLocation.setText(cursorConfig.getLink());
+		xhotspot.setValue(String.valueOf(cursorConfig.getxHotSpot()));
+		yhotspot.setValue(String.valueOf(cursorConfig.getyHotSpot()));
+		cursorLocation.setValue(cursorConfig.getLink());
 	}
 
-	private void drawCenterString(String text, int x, int y, int HEIGHT, int color) {
-		font.drawStringWithShadow(text, x - font.getStringWidth(text) / 2, y + HEIGHT / 2 - font.FONT_HEIGHT / 2,
+	private void drawCenterString(MatrixStack stack, String text, int x, int y, int HEIGHT, int color) {
+		font.drawShadow(stack, text, x - font.width(text) / 2, y + HEIGHT / 2 - font.lineHeight / 2,
 				color);
 	}
 
-	private void drawRightString(String text, int x, int y, int HEIGHT, int color) {
-		font.drawStringWithShadow(text, x - font.getStringWidth(text), y + HEIGHT / 2 - font.FONT_HEIGHT / 2, color);
+	private void drawRightString(MatrixStack stack, String text, int x, int y, int HEIGHT, int color) {
+		font.drawShadow(stack, text, x - font.width(text), y + HEIGHT / 2 - font.lineHeight / 2, color);
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float partialTicks) {
-		renderBackground();
-		xhotspot.render(mouseX, mouseY, partialTicks);
-		yhotspot.render(mouseX, mouseY, partialTicks);
-		cursorLocation.render(mouseX, mouseY, partialTicks);
-		drawCenterString(type.getName(), width / 2 - 74, height / 2 - 41 - 21, 20, Color.ORANGE.getRGB());
-		drawRightString(I18n.format("cursormod.config.xhotspot") + " : ", xhotspot.x, xhotspot.y, xhotspot.getHeight(),
+	@SuppressWarnings("deprecation")
+	public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+		renderBackground(stack);
+		xhotspot.render(stack, mouseX, mouseY, partialTicks);
+		yhotspot.render(stack, mouseX, mouseY, partialTicks);
+		cursorLocation.render(stack, mouseX, mouseY, partialTicks);
+		drawCenterString(stack, type.getName(), width / 2 - 74, height / 2 - 41 - 21, 20, Color.ORANGE.getRGB());
+		drawRightString(stack, I18n.get("cursormod.config.xhotspot") + " : ", xhotspot.x, xhotspot.y, xhotspot.getHeight(),
 				Color.WHITE.getRGB());
-		drawRightString(I18n.format("cursormod.config.yhotspot") + " : ", yhotspot.x, yhotspot.y, yhotspot.getHeight(),
+		drawRightString(stack, I18n.get("cursormod.config.yhotspot") + " : ", yhotspot.x, yhotspot.y, yhotspot.getHeight(),
 				Color.WHITE.getRGB());
-		drawRightString(I18n.format("cursormod.config.location") + " : ", cursorLocation.x, cursorLocation.y,
+		drawRightString(stack, I18n.get("cursormod.config.location") + " : ", cursorLocation.x, cursorLocation.y,
 				cursorLocation.getHeight(), Color.WHITE.getRGB());
 		if (syncImageSize()) {
-			getMinecraft().getTextureManager().bindTexture(cursorConfig.getResourceLocation());
+			getMinecraft().getTextureManager().bind(cursorConfig.getResourceLocation());
 			GuiUtils.drawGradientRect((float) getBlitOffset(), width / 2 + 36, height / 2 - 64, width / 2 + 164,
 					height / 2 + 64, -1072689136, -804253680);
 			RenderSystem.color3f(1, 1, 1);
@@ -75,40 +80,42 @@ public abstract class GuiCursorConfig extends Screen {
 					128, imageWidth, imageHeight * numImage);
 			if (cursorConfig.getxHotSpot() >= 0 && cursorConfig.getxHotSpot() < imageWidth
 					&& cursorConfig.getyHotSpot() >= 0 && cursorConfig.getyHotSpot() < imageHeight)
-				drawCenteredString(font, "+",
+				drawCenteredString(stack, font, "+",
 						width / 2 + 36 + ((int) (((float) cursorConfig.getxHotSpot()) * 128F / (float) imageWidth)),
 						height / 2 - 64 + ((int) (((float) cursorConfig.getyHotSpot()) * 128F / (float) imageHeight))
-								- font.FONT_HEIGHT / 2,
+								- font.lineHeight / 2,
 						Color.WHITE.getRGB());
 			if (numImage > 1)
-				drawCenteredString(font, "(" + I18n.format("cursormod.gui.animate") + ")", width / 2 + 100,
+				drawCenteredString(stack, font, "(" + I18n.get("cursormod.gui.animate") + ")", width / 2 + 100,
 						height / 2 + 64 + 1, Color.WHITE.getRGB());
 			selectZone.enable = true;
 		} else {
-			drawCenteredString(font, I18n.format("cursormod.gui.error"), width / 2 + 100,
-					height / 2 - font.FONT_HEIGHT / 2, Color.RED.getRGB());
+			drawCenteredString(stack, font, I18n.get("cursormod.gui.error"), width / 2 + 100,
+					height / 2 - font.lineHeight / 2, Color.RED.getRGB());
 			selectZone.enable = false;
 		}
-		super.render(mouseX, mouseY, partialTicks);
+		super.render(stack, mouseX, mouseY, partialTicks);
 	}
 
+	@Override
 	public void init() {
 		syncImageSize();
-		xhotspot = new TextFieldWidget(font, width / 2 - 99, height / 2 - 41, 124, 18, "");
-		yhotspot = new TextFieldWidget(font, width / 2 - 99, height / 2 - 20, 124, 18, "");
-		cursorLocation = new TextFieldWidget(font, width / 2 - 99, height / 2 + 1, 124, 18, "");
-		cursorLocation.setMaxStringLength(Integer.MAX_VALUE);
+		xhotspot = new TextFieldWidget(font, width / 2 - 99, height / 2 - 41, 124, 18, EMPTY);
+		yhotspot = new TextFieldWidget(font, width / 2 - 99, height / 2 - 20, 124, 18, EMPTY);
+		cursorLocation = new TextFieldWidget(font, width / 2 - 99, height / 2 + 1, 124, 18, EMPTY);
+		cursorLocation.setMaxLength(Integer.MAX_VALUE);
 		updateCursorValues(cursorConfig);
-		children.add(selectZone = new GuiSelectZone(width / 2 + 36, height / 2 - 64, 128, 128));
-		addButton(new Button(width / 2 - 174, height / 2 + 21, 200, 20, I18n.format("cursormod.gui.default"),
+		selectZone = new GuiSelectZone(width / 2 + 36, height / 2 - 64, 128, 128);
+		children.add(selectZone);
+		addButton(new Button(width / 2 - 174, height / 2 + 21, 200, 20, new TranslationTextComponent("cursormod.gui.default"),
 				b -> updateCursorValues(type.getDefaultConfig())));
 
-		addButton(doneButton = new Button(width / 2 - 174, height / 2 + 42, 100, 20, I18n.format("gui.done"), b -> {
+		addButton(doneButton = new Button(width / 2 - 174, height / 2 + 42, 100, 20, new TranslationTextComponent("gui.done"), b -> {
 			saveConfig(cursorConfig);
-			getMinecraft().displayGuiScreen(parent);
+			getMinecraft().setScreen(parent);
 		}));
-		addButton(new Button(width / 2 - 72, height / 2 + 42, 99, 20, I18n.format("cursormod.gui.cancel"),
-				b -> getMinecraft().displayGuiScreen(parent)));
+		addButton(new Button(width / 2 - 72, height / 2 + 42, 99, 20, new TranslationTextComponent("cursormod.gui.cancel"),
+				b -> getMinecraft().setScreen(parent)));
 		super.init();
 	}
 
@@ -139,8 +146,8 @@ public abstract class GuiCursorConfig extends Screen {
 					.clamp((int) ((float) (mouseX - (width / 2 + 36)) * (float) imageWidth / 128F), 0, imageWidth - 1));
 			cursorConfig.setyHotSpot(MathHelper.clamp(
 					(int) ((float) (mouseY - (height / 2 - 64)) * (float) imageHeight / 128F), 0, imageWidth - 1));
-			xhotspot.setText(String.valueOf(cursorConfig.getxHotSpot()));
-			yhotspot.setText(String.valueOf(cursorConfig.getyHotSpot()));
+			xhotspot.setValue(String.valueOf(cursorConfig.getxHotSpot()));
+			yhotspot.setValue(String.valueOf(cursorConfig.getyHotSpot()));
 		}
 		return super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
@@ -171,7 +178,7 @@ public abstract class GuiCursorConfig extends Screen {
 	private void verifyValue() {
 		boolean flag = syncImageSize();
 		try {
-			cursorConfig.setxHotSpot(Integer.valueOf(xhotspot.getText()));
+			cursorConfig.setxHotSpot(Integer.valueOf(xhotspot.getValue()));
 			if (cursorConfig.getxHotSpot() >= 0 && cursorConfig.getxHotSpot() < imageWidth) {
 				xhotspot.setTextColor(Color.WHITE.getRGB());
 			} else {
@@ -183,7 +190,7 @@ public abstract class GuiCursorConfig extends Screen {
 			flag = false;
 		}
 		try {
-			cursorConfig.setyHotSpot(Integer.valueOf(yhotspot.getText()));
+			cursorConfig.setyHotSpot(Integer.valueOf(yhotspot.getValue()));
 			if (cursorConfig.getyHotSpot() >= 0 && cursorConfig.getyHotSpot() < imageHeight) {
 				yhotspot.setTextColor(Color.WHITE.getRGB());
 			} else {
@@ -194,7 +201,7 @@ public abstract class GuiCursorConfig extends Screen {
 			yhotspot.setTextColor(Color.RED.getRGB());
 			flag = false;
 		}
-		cursorConfig.setLink(cursorLocation.getText());
+		cursorConfig.setLink(cursorLocation.getValue());
 		doneButton.active = flag;
 	}
 }
