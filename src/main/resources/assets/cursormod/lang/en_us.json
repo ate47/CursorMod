@@ -22,6 +22,6 @@
     "cursormod.cursor.beam": "Beam",
     "cursormod.cursor.cross": "Cross",
 
-    "cursormod.licence": "Licence %s",
+    "cursormod.licence": "License %s",
     "cursormod.authors": "By %s"
 }
