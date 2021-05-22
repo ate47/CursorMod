@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "fr.atesab.customcursormod.fabric.mixin",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+	],
+	"client": [
+	  "HandledScreenMixin"
+	],
+	"injectors": {
+	  "defaultRequire": 1
+	}
+  }

@@ -20,6 +20,8 @@
     "cursormod.cursor.hand": "Hand",
     "cursormod.cursor.hand_grab": "Grabbing hand",
     "cursormod.cursor.beam": "Beam",
-    "cursormod.cursor.cross": "Cross"
+    "cursormod.cursor.cross": "Cross",
 
+    "cursormod.licence": "Licence %s",
+    "cursormod.authors": "By %s"
 }
