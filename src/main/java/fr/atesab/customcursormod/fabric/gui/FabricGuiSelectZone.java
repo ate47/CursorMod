@@ -1,16 +1,16 @@
-package fr.atesab.customcursormod.forge.gui;
+package fr.atesab.customcursormod.fabric.gui;
 
 import fr.atesab.customcursormod.common.cursor.SelectZone;
-import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.gui.Element;
 
-public class ForgeGuiSelectZone extends SelectZone implements IGuiEventListener {
+public class FabricGuiSelectZone extends SelectZone implements Element {
 	private int xPosition;
 	private int yPosition;
 	private int width;
 	private int height;
 	private boolean enable = true;
 
-	public ForgeGuiSelectZone(int xPosition, int yPosition, int width, int height) {
+	public FabricGuiSelectZone(int xPosition, int yPosition, int width, int height) {
 		this.xPosition = xPosition;
 		this.yPosition = yPosition;
 		this.width = width;
@@ -78,23 +78,17 @@ public class ForgeGuiSelectZone extends SelectZone implements IGuiEventListener 
 	public void setEnable(boolean enable) {
 		this.enable = enable;
 	}
-
-	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-		// Avoid problem with IGuiEventListener
-		return super.mouseClicked(mouseX, mouseY, mouseButton);
-	}
-
-	@Override
-	public boolean keyPressed(int key, int scan, int modifier) {
-		// Avoid problem with IGuiEventListener
-		return super.keyPressed(key, scan, modifier);
-	}
-
 	@Override
 	public boolean charTyped(char key, int modifier) {
-		// Avoid problem with IGuiEventListener
-		return super.charTyped(key, modifier);
+		return Element.super.charTyped(key, modifier);
+	}
+	@Override
+	public boolean keyPressed(int key, int scan, int modifier) {
+		return Element.super.keyPressed(key, scan, modifier);
+	}
+	@Override
+	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+		return Element.super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
 }

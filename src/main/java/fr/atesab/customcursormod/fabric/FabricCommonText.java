@@ -1,16 +1,14 @@
-package fr.atesab.customcursormod.forge;
+package fr.atesab.customcursormod.fabric;
 
 import fr.atesab.customcursormod.common.handler.CommonText;
 import fr.atesab.customcursormod.common.handler.CommonTextAppendable;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.text.Text;
 
-public class ForgeCommonText extends CommonText {
-	private ITextComponent handle;
-
-	public ForgeCommonText(ITextComponent handle) {
+public class FabricCommonText extends CommonText {
+	private Text handle;
+	public FabricCommonText(Text handle) {
 		this.handle = handle;
 	}
-
 	@Override
 	public String getString() {
 		return handle.getString();
@@ -24,7 +22,7 @@ public class ForgeCommonText extends CommonText {
 
 	@Override
 	public CommonTextAppendable copy() {
-		return new ForgeCommonTextAppendable(handle.copy());
+		return new FabricCommonTextAppendable(handle.copy());
 	}
-
+	
 }

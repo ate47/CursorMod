@@ -1,22 +1,22 @@
-package fr.atesab.customcursormod.forge;
-
-import com.mojang.blaze3d.matrix.MatrixStack;
+package fr.atesab.customcursormod.fabric;
 
 import fr.atesab.customcursormod.common.handler.CommonButton;
 import fr.atesab.customcursormod.common.handler.CommonMatrixStack;
 import fr.atesab.customcursormod.common.handler.CommonText;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
+import fr.atesab.customcursormod.fabric.mixin.AbstractButtonWidgetMixin;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 
-public class ForgeCommonButton extends CommonButton {
-	public final Button handle;
+public class FabricCommonButton extends CommonButton {
+	public final ButtonWidget handle;
 
-	public ForgeCommonButton(CommonButtonObject obj) {
-		handle = new Button(obj.xPosition, obj.yPosition, obj.width, obj.height,
-				obj.message.<ITextComponent>getHandle(), b -> obj.action.accept(this));
+	public FabricCommonButton(CommonButtonObject obj) {
+		handle = new ButtonWidget(obj.xPosition, obj.yPosition, obj.width, obj.height, obj.message.<Text>getHandle(),
+				b -> obj.action.accept(this));
 	}
 
-	public ForgeCommonButton(Button handle) {
+	public FabricCommonButton(ButtonWidget handle) {
 		this.handle = handle;
 	}
 
@@ -63,7 +63,7 @@ public class ForgeCommonButton extends CommonButton {
 
 	@Override
 	public void setHeight(int height) {
-		handle.setHeight(height);
+		((AbstractButtonWidgetMixin) handle).setHeight(height);
 	}
 
 	@Override
@@ -78,12 +78,12 @@ public class ForgeCommonButton extends CommonButton {
 
 	@Override
 	public CommonText getMessage() {
-		return new ForgeCommonText(handle.getMessage());
+		return new FabricCommonText(handle.getMessage());
 	}
 
 	@Override
 	public void setMessage(CommonText message) {
-		handle.setMessage(message.<ITextComponent>getHandle());
+		handle.setMessage(message.<Text>getHandle());
 	}
 
 	@Override

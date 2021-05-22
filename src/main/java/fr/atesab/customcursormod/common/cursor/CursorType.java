@@ -3,7 +3,6 @@ package fr.atesab.customcursormod.common.cursor;
 import fr.atesab.customcursormod.common.config.CursorConfig;
 import fr.atesab.customcursormod.common.handler.CommonText;
 import fr.atesab.customcursormod.common.handler.TranslationCommonText;
-import fr.atesab.customcursormod.forge.ForgeCursorMod;
 
 /**
  * a basic cursor type, use {@link ForgeCursorMod#registerCursor(CursorType...)} to

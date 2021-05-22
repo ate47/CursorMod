@@ -1,14 +1,14 @@
-package fr.atesab.customcursormod.forge;
+package fr.atesab.customcursormod.fabric;
 
 import fr.atesab.customcursormod.common.handler.CommonMatrixStack;
 import fr.atesab.customcursormod.common.handler.CommonScreen;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 
-public class ForgeBasicCommonScreen extends CommonScreen {
+public class FabricBasicCommonScreen extends CommonScreen {
 	private Screen handle;
 
-	public ForgeBasicCommonScreen(Screen handle) {
+	public FabricBasicCommonScreen(Screen handle) {
 		super(null);
 		this.handle = handle;
 	}
@@ -20,7 +20,7 @@ public class ForgeBasicCommonScreen extends CommonScreen {
 
 	@Override
 	public void displayScreen() {
-		Minecraft.getInstance().setScreen(handle);
+		MinecraftClient.getInstance().openScreen(handle);
 	}
 
 	@Override

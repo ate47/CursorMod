@@ -1,23 +1,23 @@
-package fr.atesab.customcursormod.forge;
-
-import com.mojang.blaze3d.matrix.MatrixStack;
+package fr.atesab.customcursormod.fabric;
 
 import fr.atesab.customcursormod.common.handler.CommonMatrixStack;
 import fr.atesab.customcursormod.common.handler.CommonTextField;
-import net.minecraft.client.Minecraft;
+import fr.atesab.customcursormod.fabric.mixin.AbstractButtonWidgetMixin;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 
-public class ForgeCommonTextField extends CommonTextField {
+public class FabricCommonTextField extends CommonTextField {
 	private TextFieldWidget handle;
 
-	public ForgeCommonTextField(TextFieldWidget handle) {
+	public FabricCommonTextField(TextFieldWidget handle) {
 		this.handle = handle;
 	}
 
-	public ForgeCommonTextField(CommonTextFieldObject obj) {
-		this.handle = new TextFieldWidget(Minecraft.getInstance().font, obj.xPosition, obj.yPosition, obj.width,
-				obj.height, new StringTextComponent(""));
+	public FabricCommonTextField(CommonTextFieldObject obj) {
+		this.handle = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, obj.xPosition, obj.yPosition,
+				obj.width, obj.height, new LiteralText(""));
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class ForgeCommonTextField extends CommonTextField {
 
 	@Override
 	public void setHeight(int height) {
-		handle.setHeight(height);
+		((AbstractButtonWidgetMixin) handle).setHeight(height);
 	}
 
 	@Override
@@ -72,12 +72,12 @@ public class ForgeCommonTextField extends CommonTextField {
 
 	@Override
 	public void setValue(String value) {
-		handle.setValue(value);
+		handle.setText(value);
 	}
 
 	@Override
 	public String getValue() {
-		return handle.getValue();
+		return handle.getText();
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class ForgeCommonTextField extends CommonTextField {
 
 	@Override
 	public void setTextColor(int color) {
-		handle.setTextColor(color);
+		handle.setEditableColor(color);
 	}
 
 	@Override

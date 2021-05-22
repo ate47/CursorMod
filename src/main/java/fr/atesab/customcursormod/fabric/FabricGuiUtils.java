@@ -1,54 +1,43 @@
-package fr.atesab.customcursormod.forge;
+package fr.atesab.customcursormod.fabric;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import fr.atesab.customcursormod.common.handler.GuiUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
 
-public class ForgeGuiUtils extends GuiUtils {
-
-	private ForgeGuiUtils() {
+public class FabricGuiUtils extends GuiUtils {
+	private FabricGuiUtils() {
 	}
-	private static final ForgeGuiUtils instance = new ForgeGuiUtils();
-
+	private static final FabricGuiUtils instance = new FabricGuiUtils();
 	/**
 	 * @return the instance
 	 */
-	public static ForgeGuiUtils getForge() {
+	public static FabricGuiUtils getFabric() {
 		return instance;
 	}
-
-	/**
-	 * Draws a scaled, textured, tiled modal rect at z = 0. This method isn't used
-	 * anywhere in vanilla code.
-	 */
-	@SuppressWarnings("deprecation")
+	@Override
 	public void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width,
 			int height, float tileWidth, float tileHeight) {
 		float f = 1.0F / tileWidth;
 		float f1 = 1.0F / tileHeight;
 		RenderSystem.enableAlphaTest();
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferbuilder = tessellator.getBuilder();
-		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		bufferbuilder.vertex((double) x, (double) (y + height), 0.0D).uv((u * f), ((v + vHeight) * f1)).endVertex();
+		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		bufferbuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+		bufferbuilder.vertex((double) x, (double) (y + height), 0.0D).texture((u * f), ((v + vHeight) * f1)).next();
 		bufferbuilder.vertex((double) (x + width), (double) (y + height), 0.0D)
-				.uv(((u + uWidth) * f), ((v + (float) vHeight) * f1)).endVertex();
-		bufferbuilder.vertex((double) (x + width), (double) y, 0.0D).uv(((u + uWidth) * f), v * f1).endVertex();
-		bufferbuilder.vertex((double) x, (double) y, 0.0D).uv(u * f, v * f1).endVertex();
-		tessellator.end();
+				.texture(((u + uWidth) * f), ((v + (float) vHeight) * f1)).next();
+		bufferbuilder.vertex((double) (x + width), (double) y, 0.0D).texture(((u + uWidth) * f), v * f1).next();
+		bufferbuilder.vertex((double) x, (double) y, 0.0D).texture(u * f, v * f1).next();
+		tessellator.draw();
 		RenderSystem.disableAlphaTest();
 	}
 
-	/**
-	 * Draws a rectangle with a vertical gradient between the specified colors (ARGB
-	 * format). Args : x1, y1, x2, y2, topColor, bottomColor
-	 */
-	@SuppressWarnings("deprecation")
+	@Override
 	public void drawGradientRect(float zLevel, int left, int top, int right, int bottom, int startColor,
 			int endColor) {
 		float f = (float) (startColor >> 24 & 255) / 255.0F;
@@ -62,30 +51,29 @@ public class ForgeGuiUtils extends GuiUtils {
 		RenderSystem.disableTexture();
 		RenderSystem.enableBlend();
 		RenderSystem.disableAlphaTest();
-		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-				GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-				GlStateManager.DestFactor.ZERO);
+		RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA,
+				GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE,
+				GlStateManager.DstFactor.ZERO);
 		RenderSystem.shadeModel(7425);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferbuilder = tessellator.getBuilder();
-		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		bufferbuilder.begin(7, VertexFormats.POSITION_COLOR);
 		bufferbuilder.vertex((double) right, (double) top, (double) zLevel).color(f1, f2, f3, f)
-				.endVertex();
+				.next();
 		bufferbuilder.vertex((double) left, (double) top, (double) zLevel).color(f1, f2, f3, f)
-				.endVertex();
+				.next();
 		bufferbuilder.vertex((double) left, (double) bottom, (double) zLevel).color(f5, f6, f7, f4)
-				.endVertex();
+				.next();
 		bufferbuilder.vertex((double) right, (double) bottom, (double) zLevel).color(f5, f6, f7, f4)
-				.endVertex();
-		tessellator.end();
+				.next();
+		tessellator.draw();
 		RenderSystem.shadeModel(7424);
 		RenderSystem.disableBlend();
 		RenderSystem.enableAlphaTest();
 		RenderSystem.enableTexture();
 	}
-
 	@Override
 	public int fontHeight() {
-		return Minecraft.getInstance().font.lineHeight;
+		return MinecraftClient.getInstance().textRenderer.fontHeight;
 	}
 }
