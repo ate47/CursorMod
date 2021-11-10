@@ -1,14 +1,11 @@
 {
   "schemaVersion": 1,
   "id": "cursormod",
-  "version": "1.2.2",
+  "version": "1.3.0",
 
   "name": "Custom Cursor Mod",
   "description": "Change your cursor.",
-  "authors": [
-    "ATE47",
-    "KevinFernandezDominguez"
-  ],
+  "authors": ["ATE47", "KevinFernandezDominguez"],
   "contact": {
     "homepage": "https://minecraft.curseforge.com/projects/cursor-mod/",
     "sources": "https://github.com/ate47/CursorMod"
@@ -19,18 +16,14 @@
 
   "environment": "*",
   "entrypoints": {
-    "client": [
-      "fr.atesab.customcursormod.fabric.FabricCursorMod"
-    ]
+    "client": ["fr.atesab.customcursormod.fabric.FabricCursorMod"]
   },
-  "mixins": [
-    "cursormod.mixins.json"
-  ],
+  "mixins": ["cursormod.mixins.json"],
 
   "depends": {
-    "fabricloader": ">=0.7.4",
+    "fabricloader": ">=0.11.3",
     "fabric": "*",
-    "minecraft": "1.16.x"
+    "minecraft": "1.17.x"
   },
   "suggests": {
     "another-mod": "*"
