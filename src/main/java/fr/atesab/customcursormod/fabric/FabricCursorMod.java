@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 
 import fr.atesab.customcursormod.common.CursorMod;
@@ -49,6 +50,7 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Identifier;
 
 public class FabricCursorMod implements ClientModInitializer, ClientTickEvents.StartTick, ScreenEvents.AfterInit,
 		ScreenEvents.AfterRender, ScreenEvents.AfterTick, ScreenMouseEvents.AfterMouseClick, ClientStarted {
@@ -242,11 +244,11 @@ public class FabricCursorMod implements ClientModInitializer, ClientTickEvents.S
 				CursorClick cursorClick = iterator.next();
 				int posX = (int) cursorClick.getPosX();
 				int posY = (int) cursorClick.getPosY();
-				new FabricResourceLocationCommon("textures/gui/click_" + (2 - cursorClick.getTime() / 3) + ".png")
-						.setShaderTexture();
-				FabricGuiUtils.getFabric().setShaderColor(1, 1, 1);
+				FabricGuiUtils.getFabric().setShader(FabricCommonShaders.getFabric().getPositionTexShader());
+				RenderSystem.setShaderTexture(0,
+						new Identifier("textures/gui/click_" + (2 - cursorClick.getTime() / 3) + ".png"));
 				FabricGuiUtils.getFabric().drawScaledCustomSizeModalRect(posX - 8, posY - 8, 0, 0, 16, 16, 16, 16, 16,
-						16);
+						16, 0xffffffff, true);
 				cursorClick.descreaseTime();
 				if (cursorClick.getTime() <= 0) {
 					iterator.remove();
