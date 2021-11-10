@@ -8,4 +8,20 @@ public class FabricCommonMatrixStack extends BasicHandler<MatrixStack> implement
 	public FabricCommonMatrixStack(MatrixStack handle) {
 		super(handle);
 	}
+
+	@Override
+	public void scale(float x, float y, float z) {
+		handle.scale(x, y, z);
+	}
+
+	@Override
+	public void setIdentity() {
+		handle.loadIdentity();
+	}
+
+	@Override
+	public void translate(float x, float y, float z) {
+		handle.translate(x, y, z);
+	}
+
 }

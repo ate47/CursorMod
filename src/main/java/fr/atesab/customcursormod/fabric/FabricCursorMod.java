@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 
 import fr.atesab.customcursormod.common.CursorMod;
@@ -33,16 +32,15 @@ import fr.atesab.customcursormod.fabric.gui.FabricGuiSelectZone;
 import fr.atesab.customcursormod.fabric.mixin.HandledScreenMixin;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.ClientStarted;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
@@ -122,7 +120,7 @@ public class FabricCursorMod implements ClientModInitializer, ClientTickEvents.S
 		return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
 	}
 
-	private boolean isHoverButton(int mouseX, int mouseY, AbstractButtonWidget button) {
+	private boolean isHoverButton(int mouseX, int mouseY, PressableWidget button) {
 		return button != null && button.visible && button.active
 				&& isHover(mouseX, mouseY, button.x, button.y, button.getWidth(), button.getHeight());
 	}
@@ -148,8 +146,7 @@ public class FabricCursorMod implements ClientModInitializer, ClientTickEvents.S
 	public void afterRender(Screen gui, MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
 		CursorType newCursorType = CursorType.POINTER;
 		if (mod.getConfig().dynamicCursor) {
-			if (gui instanceof FabricCommonScreenHandler) { // Our menu
-				FabricCommonScreenHandler handle = (FabricCommonScreenHandler) gui;
+			if (gui instanceof FabricCommonScreenHandler handle) { // Our menu
 				CommonScreen cs = handle.cs;
 				for (CommonElement o : cs.childrens) {
 					if (!o.isEnable())
@@ -175,8 +172,8 @@ public class FabricCursorMod implements ClientModInitializer, ClientTickEvents.S
 							else if (o instanceof TextFieldWidget) {
 								if (isHoverTextField(mouseX, mouseY, (TextFieldWidget) o))
 									newCursorType = CursorType.BEAM;
-							} else if (o instanceof AbstractButtonWidget) {
-								if (isHoverButton(mouseX, mouseY, (ButtonWidget) o))
+							} else if (o instanceof PressableWidget b) {
+								if (isHoverButton(mouseX, mouseY, b))
 									newCursorType = CursorType.HAND;
 							} else if (o instanceof SelectZone) {
 								SelectZone selectZone = (SelectZone) o;
@@ -184,8 +181,8 @@ public class FabricCursorMod implements ClientModInitializer, ClientTickEvents.S
 									newCursorType = CursorType.CROSS;
 							} else if (o instanceof Iterable) {
 								for (Object e : (Iterable<?>) o)
-									if (e instanceof AbstractButtonWidget) {
-										if (isHoverButton(mouseX, mouseY, (AbstractButtonWidget) e))
+									if (e instanceof PressableWidget b) {
+										if (isHoverButton(mouseX, mouseY, b))
 											newCursorType = CursorType.HAND;
 									} else if (e instanceof TextFieldWidget) {
 										if (isHoverTextField(mouseX, mouseY, (TextFieldWidget) e))
@@ -203,10 +200,9 @@ public class FabricCursorMod implements ClientModInitializer, ClientTickEvents.S
 						}
 					}
 			MinecraftClient mc = MinecraftClient.getInstance();
-			if (gui instanceof HandledScreen) {
-				HandledScreen<?> container = (HandledScreen<?>) gui;
-				if (mc.player.inventory.getCursorStack() != null
-						&& !mc.player.inventory.getCursorStack().getItem().equals(Items.AIR))
+			if (gui instanceof HandledScreen<?> container) {
+				if (mc.player.currentScreenHandler.getCursorStack() != null
+						&& !mc.player.currentScreenHandler.getCursorStack().getItem().equals(Items.AIR))
 					newCursorType = CursorType.HAND_GRAB;
 				else {
 					Slot slot = getSlotUnderMouse(container);
@@ -222,9 +218,17 @@ public class FabricCursorMod implements ClientModInitializer, ClientTickEvents.S
 				if (style != null && style.getClickEvent() != null)
 					newCursorType = CursorType.HAND;
 			}
+
+			CommonScreen commonScreen;
+			if (gui instanceof FabricCommonScreenHandler handler) {
+				commonScreen = handler.cs;
+			} else {
+				commonScreen = new FabricBasicCommonScreen(gui);
+			}
+
 			for (CursorType cursorType : mod.getCursors().keySet())
-				if (cursorType.getCursorTester() != null
-						&& cursorType.getCursorTester().testCursor(newCursorType, gui, mouseX, mouseY, tickDelta)) {
+				if (cursorType.getCursorTester() != null && cursorType.getCursorTester().testCursor(newCursorType,
+						commonScreen, mouseX, mouseY, tickDelta)) {
 					newCursorType = cursorType;
 					break;
 				}
@@ -236,8 +240,9 @@ public class FabricCursorMod implements ClientModInitializer, ClientTickEvents.S
 				CursorClick cursorClick = iterator.next();
 				int posX = (int) cursorClick.getPosX();
 				int posY = (int) cursorClick.getPosY();
-				ResourceLocationCommon.create("textures/gui/click_" + (2 - cursorClick.getTime() / 3) + ".png").bind();
-				RenderSystem.color3f(1.0F, 1.0F, 1.0F);
+				new FabricResourceLocationCommon("textures/gui/click_" + (2 - cursorClick.getTime() / 3) + ".png")
+						.setShaderTexture();
+				FabricGuiUtils.getFabric().setShaderColor(1, 1, 1);
 				FabricGuiUtils.getFabric().drawScaledCustomSizeModalRect(posX - 8, posY - 8, 0, 0, 16, 16, 16, 16, 16,
 						16);
 				cursorClick.descreaseTime();
