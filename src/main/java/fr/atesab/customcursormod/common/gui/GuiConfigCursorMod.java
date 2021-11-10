@@ -8,8 +8,6 @@ import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import fr.atesab.customcursormod.common.CursorMod;
 import fr.atesab.customcursormod.common.config.CursorConfig;
 import fr.atesab.customcursormod.common.cursor.CursorType;
@@ -17,6 +15,7 @@ import fr.atesab.customcursormod.common.handler.CommonButton;
 import fr.atesab.customcursormod.common.handler.CommonButtonValue;
 import fr.atesab.customcursormod.common.handler.CommonMatrixStack;
 import fr.atesab.customcursormod.common.handler.CommonScreen;
+import fr.atesab.customcursormod.common.handler.CommonShaders;
 import fr.atesab.customcursormod.common.handler.GuiUtils;
 import fr.atesab.customcursormod.common.handler.StringCommonText;
 import fr.atesab.customcursormod.common.handler.CommonScreen.ScreenListener;
@@ -52,18 +51,19 @@ public class GuiConfigCursorMod extends ScreenListener {
 			cursorButtons.get(i).setVisible(i < (page + 1) * elementByPage && i >= (page) * elementByPage);
 	}
 
-	private void drawCursor(int posX, int posY, CursorConfig cursorConfig) {
+	private void drawCursor(CommonMatrixStack stack, int posX, int posY, CursorConfig cursorConfig) {
 		try {
 			BufferedImage image = ImageIO.read(cursorConfig.getResource());
 			int imageWidth = image.getWidth();
 			int imageHeight = image.getWidth();
 			int numImage = image.getHeight() / image.getWidth();
-			GuiUtils.get().drawGradientRect(getScreen().getBlitOffset(), posX, posY, posX + 20, posY + 20, -1072689136,
+			var gutils = GuiUtils.get();
+			gutils.drawGradientRect(stack, getScreen().getBlitOffset(), posX, posY, posX + 20, posY + 20, -1072689136,
 					-804253680);
-			cursorConfig.getResourceLocation().bind();
-			RenderSystem.color3f(1.0F, 1.0F, 1.0F);
-			GuiUtils.get().drawScaledCustomSizeModalRect(posX, posY, 0, 0, imageWidth, imageHeight, 20, 20, imageWidth,
-					imageHeight * numImage);
+			gutils.setShader(CommonShaders.get().getPositionTexShader());
+			cursorConfig.getResourceLocation().setShaderTexture();
+			gutils.drawScaledCustomSizeModalRect(posX, posY, 0, 0, imageWidth, imageHeight, 20, 20, imageWidth,
+					imageHeight * numImage, 0xffffffff, true);
 		} catch (Exception e) {
 			// hide
 		}
@@ -77,7 +77,7 @@ public class GuiConfigCursorMod extends ScreenListener {
 				height / 2 - ((elementByPage / 2 + 1) * 21 + 2 + GuiUtils.get().fontHeight()), Color.ORANGE);
 		for (int i = page * elementByPage; i < cursorButtons.size() && i < (page + 1) * elementByPage; i++) {
 			CommonButtonValue<CursorType> button = cursorButtons.get(i);
-			drawCursor(button.getXPosition() + button.getWidth() + 1, button.getYPosition(),
+			drawCursor(stack, button.getXPosition() + button.getWidth() + 1, button.getYPosition(),
 					cursors.get(button.getValue()));
 		}
 		super.render(stack, mouseX, mouseY, partialTicks);

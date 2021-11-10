@@ -5,14 +5,13 @@ import java.util.function.Consumer;
 
 import javax.imageio.ImageIO;
 
-import org.lwjgl.opengl.GL11;
-
 import fr.atesab.customcursormod.common.config.CursorConfig;
 import fr.atesab.customcursormod.common.cursor.CursorType;
 import fr.atesab.customcursormod.common.cursor.SelectZone;
 import fr.atesab.customcursormod.common.handler.CommonButton;
 import fr.atesab.customcursormod.common.handler.CommonMatrixStack;
 import fr.atesab.customcursormod.common.handler.CommonScreen;
+import fr.atesab.customcursormod.common.handler.CommonShaders;
 import fr.atesab.customcursormod.common.handler.CommonScreen.ScreenListener;
 import fr.atesab.customcursormod.common.handler.CommonTextField;
 import fr.atesab.customcursormod.common.handler.GuiUtils;
@@ -66,12 +65,12 @@ public class GuiCursorConfig extends ScreenListener {
 		screen.drawRightString(stack, I18n.get("cursormod.config.location") + " : ", cursorLocation.getXPosition(),
 				cursorLocation.getYPosition() + cursorLocation.getHeight() / 2 - gutils.fontHeight() / 2, Color.WHITE);
 		if (syncImageSize()) {
-			gutils.drawGradientRect(screen.getBlitOffset(), width / 2 + 36, height / 2 - 64, width / 2 + 164,
-			height / 2 + 64, -1072689136, -804253680);
-			cursorConfig.getResourceLocation().bind();
-			GL11.glColor3f(1, 1, 1);
+			gutils.drawGradientRect(stack, screen.getBlitOffset(), width / 2 + 36, height / 2 - 64, width / 2 + 164,
+					height / 2 + 64, -1072689136, -804253680);
+			gutils.setShader(CommonShaders.get().getPositionTexShader());
+			cursorConfig.getResourceLocation().setShaderTexture();
 			gutils.drawScaledCustomSizeModalRect(width / 2 + 36, height / 2 - 64, 0, 0, imageWidth, imageHeight, 128,
-					128, imageWidth, imageHeight * numImage);
+					128, imageWidth, imageHeight * numImage, 0xffffffff, true);
 			if (cursorConfig.getxHotSpot() >= 0 && cursorConfig.getxHotSpot() < imageWidth
 					&& cursorConfig.getyHotSpot() >= 0 && cursorConfig.getyHotSpot() < imageHeight)
 				screen.drawCenterString(stack, "+",
