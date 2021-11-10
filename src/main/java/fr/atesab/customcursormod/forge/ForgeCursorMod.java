@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import fr.atesab.customcursormod.common.CursorMod;
 import fr.atesab.customcursormod.common.config.CursorConfig;
 import fr.atesab.customcursormod.common.cursor.CursorClick;
@@ -52,7 +50,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import net.minecraftforge.fmlclient.ConfigGuiHandler.ConfigGuiFactory;
 import net.minecraftforge.fmlclient.gui.screen.ModListScreen;
 import net.minecraftforge.fmlclient.gui.widget.ModListWidget;

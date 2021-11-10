@@ -5,6 +5,8 @@ import java.util.function.Consumer;
 
 import javax.imageio.ImageIO;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import org.lwjgl.opengl.GL11;
 
 import fr.atesab.customcursormod.common.config.CursorConfig;
@@ -69,7 +71,7 @@ public class GuiCursorConfig extends ScreenListener {
 			gutils.drawGradientRect(stack, screen.getBlitOffset(), width / 2 + 36, height / 2 - 64, width / 2 + 164,
 					height / 2 + 64, -1072689136, -804253680);
 			cursorConfig.getResourceLocation().bind();
-			GL11.glColor3f(1, 1, 1);
+			// RenderSystem.glColor3f(1, 1, 1); TODO: check ok?
 			gutils.drawScaledCustomSizeModalRect(width / 2 + 36, height / 2 - 64, 0, 0, imageWidth, imageHeight, 128,
 					128, imageWidth, imageHeight * numImage);
 			if (cursorConfig.getxHotSpot() >= 0 && cursorConfig.getxHotSpot() < imageWidth

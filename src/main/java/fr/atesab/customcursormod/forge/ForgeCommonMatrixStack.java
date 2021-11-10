@@ -10,4 +10,19 @@ public class ForgeCommonMatrixStack extends BasicHandler<PoseStack> implements C
 	public ForgeCommonMatrixStack(PoseStack handle) {
 		super(handle);
 	}
+
+	@Override
+	public void scale(float x, float y, float z) {
+		handle.scale(x, y, z);
+	}
+
+	@Override
+	public void setIdentity() {
+		handle.setIdentity();
+	}
+
+	@Override
+	public void translate(float x, float y, float z) {
+		handle.translate(x, y, z);
+	}
 }

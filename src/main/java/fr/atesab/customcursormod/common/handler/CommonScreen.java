@@ -3,8 +3,6 @@ package fr.atesab.customcursormod.common.handler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
 public abstract class CommonScreen {
 	public static class ScreenListener {
 		protected int width;
@@ -174,8 +172,7 @@ public abstract class CommonScreen {
 		drawCenterString(stack, text, (float) x, (float) y, color, factor);
 	}
 
-	public void drawCenterString(CommonMatrixStack stack, String text, float x, float y, int color,
-			float factor) {
+	public void drawCenterString(CommonMatrixStack stack, String text, float x, float y, int color, float factor) {
 		drawString(stack, text, x - fontWidth(text) * factor / 2, y, color, factor);
 	}
 
@@ -208,9 +205,9 @@ public abstract class CommonScreen {
 	}
 
 	public void drawString(CommonMatrixStack stack, String text, float x, float y, int color, float factor) {
-		GL11.glScalef(factor, factor, factor);
+		stack.scale(factor);
 		drawString(stack, text, x / factor, y / factor, color);
-		GL11.glScalef(1F / factor, 1F / factor, 1F / factor);
+		stack.scaleInv(factor);
 	}
 
 	public void drawString(CommonMatrixStack stack, String text, int x, int y, int color) {
