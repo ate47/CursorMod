@@ -220,9 +220,17 @@ public class ForgeCursorMod {
 				if (style != null && style.getClickEvent() != null)
 					newCursorType = CursorType.HAND;
 			}
+
+			CommonScreen commonScreen;
+			if (gui instanceof ForgeCommonScreenHandler handler) {
+				commonScreen = handler.cs;
+			} else {
+				commonScreen = new ForgeBasicCommonScreen(gui);
+			}
+
 			for (CursorType cursorType : mod.getCursors().keySet())
-				if (cursorType.getCursorTester() != null && cursorType.getCursorTester().testCursor(newCursorType, gui,
-						ev.getMouseX(), ev.getMouseY(), ev.getRenderPartialTicks())) {
+				if (cursorType.getCursorTester() != null && cursorType.getCursorTester().testCursor(newCursorType,
+						commonScreen, ev.getMouseX(), ev.getMouseY(), ev.getRenderPartialTicks())) {
 					newCursorType = cursorType;
 					break;
 				}
