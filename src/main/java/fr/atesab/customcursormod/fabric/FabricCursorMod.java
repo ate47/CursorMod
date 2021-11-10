@@ -21,6 +21,7 @@ import fr.atesab.customcursormod.common.gui.GuiConfig;
 import fr.atesab.customcursormod.common.handler.CommonButton;
 import fr.atesab.customcursormod.common.handler.CommonElement;
 import fr.atesab.customcursormod.common.handler.CommonScreen;
+import fr.atesab.customcursormod.common.handler.CommonShaders;
 import fr.atesab.customcursormod.common.handler.CommonTextField;
 import fr.atesab.customcursormod.common.handler.GameType;
 import fr.atesab.customcursormod.common.handler.GuiUtils;
@@ -66,6 +67,7 @@ public class FabricCursorMod implements ClientModInitializer, ClientTickEvents.S
 				v -> new FabricBasicCommonScreen(MinecraftClient.getInstance().currentScreen));
 		fr.atesab.customcursormod.common.utils.I18n.SUPPLIER.forType(GameType.FABRIC,
 				obj -> I18n.translate(obj.format, obj.args));
+		CommonShaders.SUPPLIER.forType(GameType.FABRIC, FabricCommonShaders::getFabric);
 	}
 
 	private CursorMod mod = new CursorMod(GameType.FABRIC);
