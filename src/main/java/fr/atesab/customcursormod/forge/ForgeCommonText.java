@@ -2,12 +2,12 @@ package fr.atesab.customcursormod.forge;
 
 import fr.atesab.customcursormod.common.handler.CommonText;
 import fr.atesab.customcursormod.common.handler.CommonTextAppendable;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 public class ForgeCommonText extends CommonText {
-	private ITextComponent handle;
+	private Component handle;
 
-	public ForgeCommonText(ITextComponent handle) {
+	public ForgeCommonText(Component handle) {
 		this.handle = handle;
 	}
 

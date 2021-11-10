@@ -27,17 +27,16 @@ import fr.atesab.customcursormod.common.handler.TranslationCommonText;
 import fr.atesab.customcursormod.forge.ForgeCommonScreen.ForgeCommonScreenHandler;
 import fr.atesab.customcursormod.forge.gui.ForgeGuiSelectZone;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.button.AbstractButton;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.Style;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
@@ -47,16 +46,16 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.client.gui.screen.ModListScreen;
-import net.minecraftforge.fml.client.gui.widget.ModListWidget;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
+import net.minecraftforge.fmlclient.ConfigGuiHandler.ConfigGuiFactory;
+import net.minecraftforge.fmlclient.gui.screen.ModListScreen;
+import net.minecraftforge.fmlclient.gui.widget.ModListWidget;
 
 @OnlyIn(Dist.CLIENT)
 @Mod(CursorMod.MOD_ID)
@@ -82,8 +81,8 @@ public class ForgeCursorMod {
 	public ForgeCursorMod() {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		MinecraftForge.EVENT_BUS.register(this);
-		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (mc,
-				parent) -> ((ForgeCommonScreen) GuiConfig.create(new ForgeBasicCommonScreen(parent))).getHandle());
+		ModLoadingContext.get().registerExtensionPoint(ConfigGuiFactory.class, () -> new ConfigGuiFactory((mc,
+				parent) -> ((ForgeCommonScreen) GuiConfig.create(new ForgeBasicCommonScreen(parent))).getHandle()));
 	}
 
 	private void checkModList(Screen screen) {
@@ -91,13 +90,13 @@ public class ForgeCursorMod {
 		if (screen != null && screen instanceof ModListScreen) {
 			ModListWidget.ModEntry entry = getFirstFieldOfTypeInto(ModListWidget.ModEntry.class, screen);
 			if (entry != null) {
-				ModInfo info = entry.getInfo();
+				var info = entry.getInfo();
 				if (info != null) {
 					Optional<? extends ModContainer> op = ModList.get().getModContainerById(info.getModId());
 					if (op.isPresent()) {
-						boolean value = op.get().getCustomExtension(ExtensionPoint.CONFIGGUIFACTORY).isPresent();
+						boolean value = op.get().getCustomExtension(ConfigGuiFactory.class).isPresent();
 						String configText = I18n.get("fml.menu.mods.config");
-						for (IGuiEventListener b : screen.children())
+						for (var b : screen.children())
 							if (b instanceof Button && ((Button) b).getMessage().getString().equals(configText))
 								((Button) b).active = value;
 					}
@@ -143,7 +142,7 @@ public class ForgeCursorMod {
 				&& isHover(mouseX, mouseY, button.x, button.y, button.getWidth(), button.getHeight());
 	}
 
-	private boolean isHoverTextField(int mouseX, int mouseY, TextFieldWidget textField) {
+	private boolean isHoverTextField(int mouseX, int mouseY, EditBox textField) {
 		return textField != null && textField.isVisible()
 				&& isHover(mouseX, mouseY, textField.x, textField.y, textField.getWidth(), textField.getHeight());
 	}
@@ -178,8 +177,8 @@ public class ForgeCursorMod {
 							Object o = f.get(gui);
 							if (o == null)
 								continue;
-							else if (o instanceof TextFieldWidget) {
-								if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (TextFieldWidget) o))
+							else if (o instanceof EditBox) {
+								if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (EditBox) o))
 									newCursorType = CursorType.BEAM;
 							} else if (o instanceof AbstractButton) {
 								if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (Button) o))
@@ -195,8 +194,8 @@ public class ForgeCursorMod {
 									if (e instanceof AbstractButton) {
 										if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (AbstractButton) e))
 											newCursorType = CursorType.HAND;
-									} else if (e instanceof TextFieldWidget) {
-										if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (TextFieldWidget) e))
+									} else if (e instanceof EditBox) {
+										if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (EditBox) e))
 											newCursorType = CursorType.BEAM;
 									} else if (e instanceof SelectZone) {
 										SelectZone selectZone = (SelectZone) e;
@@ -208,10 +207,9 @@ public class ForgeCursorMod {
 						} catch (Exception e) {
 						}
 					}
-			if (gui instanceof ContainerScreen) {
-				ContainerScreen<?> container = (ContainerScreen<?>) gui;
-				if (gui.getMinecraft().player.inventory.getCarried() != null
-						&& !gui.getMinecraft().player.inventory.getCarried().getItem().equals(Items.AIR))
+			if (gui instanceof ContainerScreen container) {
+				if (gui.getMinecraft().player.containerMenu.getCarried() != null
+						&& !gui.getMinecraft().player.containerMenu.getCarried().getItem().equals(Items.AIR))
 					newCursorType = CursorType.HAND_GRAB;
 				else if (container.getSlotUnderMouse() != null && container.getSlotUnderMouse().hasItem())
 					newCursorType = CursorType.HAND;
@@ -239,9 +237,9 @@ public class ForgeCursorMod {
 				CursorClick cursorClick = iterator.next();
 				int posX = (int) cursorClick.getPosX();
 				int posY = (int) cursorClick.getPosY();
-				gui.getMinecraft().getTextureManager()
-						.bind(new ResourceLocation("textures/gui/click_" + (2 - cursorClick.getTime() / 3) + ".png"));
-				RenderSystem.color3f(1.0F, 1.0F, 1.0F);
+				gui.getMinecraft().getTextureManager().bindForSetup(
+						new ResourceLocation("textures/gui/click_" + (2 - cursorClick.getTime() / 3) + ".png"));
+				// RenderSystem.color3f(1.0F, 1.0F, 1.0F); TODO: check ok?
 				ForgeGuiUtils.getForge().drawScaledCustomSizeModalRect(posX - 8, posY - 8, 0, 0, 16, 16, 16, 16, 16,
 						16);
 				cursorClick.descreaseTime();

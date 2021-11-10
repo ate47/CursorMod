@@ -1,19 +1,16 @@
 package fr.atesab.customcursormod.forge;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-
 import fr.atesab.customcursormod.common.handler.CommonButton;
 import fr.atesab.customcursormod.common.handler.CommonMatrixStack;
 import fr.atesab.customcursormod.common.handler.CommonText;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.components.Button;
 
 public class ForgeCommonButton extends CommonButton {
 	public final Button handle;
 
 	public ForgeCommonButton(CommonButtonObject obj) {
-		handle = new Button(obj.xPosition, obj.yPosition, obj.width, obj.height,
-				obj.message.<ITextComponent>getHandle(), b -> obj.action.accept(this));
+		handle = new Button(obj.xPosition, obj.yPosition, obj.width, obj.height, obj.message.getHandle(),
+				b -> obj.action.accept(this));
 	}
 
 	public ForgeCommonButton(Button handle) {
@@ -83,7 +80,7 @@ public class ForgeCommonButton extends CommonButton {
 
 	@Override
 	public void setMessage(CommonText message) {
-		handle.setMessage(message.<ITextComponent>getHandle());
+		handle.setMessage(message.getHandle());
 	}
 
 	@Override
@@ -93,7 +90,7 @@ public class ForgeCommonButton extends CommonButton {
 
 	@Override
 	public void render(CommonMatrixStack stack, int mouseX, int mouseY, float partialTicks) {
-		handle.render(stack.<MatrixStack>getHandle(), mouseX, mouseY, partialTicks);
+		handle.render(stack.getHandle(), mouseX, mouseY, partialTicks);
 	}
 
 	@Override

@@ -1,23 +1,23 @@
 package fr.atesab.customcursormod.forge;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.customcursormod.common.handler.CommonMatrixStack;
 import fr.atesab.customcursormod.common.handler.CommonTextField;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.TextComponent;
 
 public class ForgeCommonTextField extends CommonTextField {
-	private TextFieldWidget handle;
+	private EditBox handle;
 
-	public ForgeCommonTextField(TextFieldWidget handle) {
+	public ForgeCommonTextField(EditBox handle) {
 		this.handle = handle;
 	}
 
 	public ForgeCommonTextField(CommonTextFieldObject obj) {
-		this.handle = new TextFieldWidget(Minecraft.getInstance().font, obj.xPosition, obj.yPosition, obj.width,
-				obj.height, new StringTextComponent(""));
+		this.handle = new EditBox(Minecraft.getInstance().font, obj.xPosition, obj.yPosition, obj.width, obj.height,
+				new TextComponent(""));
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class ForgeCommonTextField extends CommonTextField {
 
 	@Override
 	public void render(CommonMatrixStack stack, int mouseX, int mouseY, float partialTicks) {
-		handle.render(stack.<MatrixStack>getHandle(), mouseX, mouseY, partialTicks);
+		handle.render(stack.getHandle(), mouseX, mouseY, partialTicks);
 	}
 
 	@Override

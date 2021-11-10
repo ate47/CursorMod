@@ -5,20 +5,23 @@ import java.io.InputStream;
 
 import fr.atesab.customcursormod.common.handler.ResourceLocationCommon;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class ForgeResourceLocationCommon extends ResourceLocationCommon {
 
 	private ResourceLocation resource;
+
 	public ForgeResourceLocationCommon(String link) {
 		resource = new ResourceLocation(link);
 	}
+
 	public ForgeResourceLocationCommon(ResourceLocation resource) {
 		this.resource = resource;
 	}
+
 	@Override
 	public void bind() {
-		Minecraft.getInstance().getTextureManager().bind(resource);
+		Minecraft.getInstance().getTextureManager().bindForSetup(resource);
 	}
 
 	@Override

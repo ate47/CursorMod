@@ -3,7 +3,7 @@ package fr.atesab.customcursormod.forge;
 import fr.atesab.customcursormod.common.handler.CommonMatrixStack;
 import fr.atesab.customcursormod.common.handler.CommonScreen;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 public class ForgeBasicCommonScreen extends CommonScreen {
 	private Screen handle;

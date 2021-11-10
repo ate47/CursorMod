@@ -3,18 +3,18 @@ package fr.atesab.customcursormod.forge;
 import fr.atesab.customcursormod.common.handler.CommonText;
 import fr.atesab.customcursormod.common.handler.CommonTextAppendable;
 import fr.atesab.customcursormod.common.handler.StringCommonText;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 
 public class ForgeStringCommonTextImpl extends StringCommonText {
 
-	private StringTextComponent handle;
+	private TextComponent handle;
 
 	public ForgeStringCommonTextImpl(String text) {
-		handle = new StringTextComponent(text);
+		handle = new TextComponent(text);
 	}
 
-	public ForgeStringCommonTextImpl(StringTextComponent handle) {
+	public ForgeStringCommonTextImpl(TextComponent handle) {
 		this.handle = handle;
 	}
 
@@ -36,6 +36,6 @@ public class ForgeStringCommonTextImpl extends StringCommonText {
 
 	@Override
 	public CommonTextAppendable append(CommonText text) {
-		return new ForgeCommonTextAppendable(handle.append(text.<IFormattableTextComponent>getHandle()));
+		return new ForgeCommonTextAppendable(handle.append(text.<MutableComponent>getHandle()));
 	}
 }

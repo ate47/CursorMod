@@ -1,19 +1,19 @@
 package fr.atesab.customcursormod.forge;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import fr.atesab.customcursormod.common.handler.CommonMatrixStack;
 import fr.atesab.customcursormod.common.handler.CommonScreen;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.BaseComponent;
 
 public class ForgeCommonScreen extends CommonScreen {
 	class ForgeCommonScreenHandler extends Screen {
 		ForgeCommonScreen cs;
 
-		ForgeCommonScreenHandler(ITextComponent title) {
+		ForgeCommonScreenHandler(BaseComponent title) {
 			super(title);
 			cs = ForgeCommonScreen.this;
 		}
@@ -55,12 +55,12 @@ public class ForgeCommonScreen extends CommonScreen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
+		public void render(PoseStack matrices, int mouseX, int mouseY, float partialTicks) {
 			ForgeCommonScreen.this.render(new ForgeCommonMatrixStack(matrices), mouseX, mouseY, partialTicks);
 			super.render(matrices, mouseX, mouseY, partialTicks);
 		}
 
-		FontRenderer getTextRenderer() {
+		Font getTextRenderer() {
 			return font;
 		}
 	}
@@ -69,7 +69,7 @@ public class ForgeCommonScreen extends CommonScreen {
 
 	public ForgeCommonScreen(CommonScreen.CommonScreenObject obj) {
 		super(obj.parent, obj.listener);
-		handle = new ForgeCommonScreenHandler(obj.title.<ITextComponent>getHandle());
+		handle = new ForgeCommonScreenHandler(obj.title.getHandle());
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class ForgeCommonScreen extends CommonScreen {
 
 	@Override
 	public void renderDefaultBackground(CommonMatrixStack stack) {
-		handle.renderBackground(stack.<MatrixStack>getHandle());
+		handle.renderBackground(stack.getHandle());
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public class ForgeCommonScreen extends CommonScreen {
 
 	@Override
 	public void drawString(CommonMatrixStack stack, String text, float x, float y, int color) {
-		handle.getTextRenderer().draw(stack.<MatrixStack>getHandle(), text, x, y, color);
+		handle.getTextRenderer().draw(stack.getHandle(), text, x, y, color);
 	}
 
 	@Override

@@ -1,9 +1,9 @@
 package fr.atesab.customcursormod.forge.gui;
 
 import fr.atesab.customcursormod.common.cursor.SelectZone;
-import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 
-public class ForgeGuiSelectZone extends SelectZone implements IGuiEventListener {
+public class ForgeGuiSelectZone extends SelectZone implements GuiEventListener {
 	private int xPosition;
 	private int yPosition;
 	private int width;

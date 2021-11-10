@@ -66,8 +66,8 @@ public class GuiCursorConfig extends ScreenListener {
 		screen.drawRightString(stack, I18n.get("cursormod.config.location") + " : ", cursorLocation.getXPosition(),
 				cursorLocation.getYPosition() + cursorLocation.getHeight() / 2 - gutils.fontHeight() / 2, Color.WHITE);
 		if (syncImageSize()) {
-			gutils.drawGradientRect(screen.getBlitOffset(), width / 2 + 36, height / 2 - 64, width / 2 + 164,
-			height / 2 + 64, -1072689136, -804253680);
+			gutils.drawGradientRect(stack, screen.getBlitOffset(), width / 2 + 36, height / 2 - 64, width / 2 + 164,
+					height / 2 + 64, -1072689136, -804253680);
 			cursorConfig.getResourceLocation().bind();
 			GL11.glColor3f(1, 1, 1);
 			gutils.drawScaledCustomSizeModalRect(width / 2 + 36, height / 2 - 64, 0, 0, imageWidth, imageHeight, 128,
