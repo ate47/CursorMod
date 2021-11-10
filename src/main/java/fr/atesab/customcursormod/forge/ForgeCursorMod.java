@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import fr.atesab.customcursormod.common.CursorMod;
 import fr.atesab.customcursormod.common.config.CursorConfig;
 import fr.atesab.customcursormod.common.cursor.CursorClick;
@@ -16,6 +18,7 @@ import fr.atesab.customcursormod.common.gui.GuiConfig;
 import fr.atesab.customcursormod.common.handler.CommonButton;
 import fr.atesab.customcursormod.common.handler.CommonElement;
 import fr.atesab.customcursormod.common.handler.CommonScreen;
+import fr.atesab.customcursormod.common.handler.CommonShaders;
 import fr.atesab.customcursormod.common.handler.CommonTextField;
 import fr.atesab.customcursormod.common.handler.GameType;
 import fr.atesab.customcursormod.common.handler.GuiUtils;
@@ -30,7 +33,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -73,6 +76,7 @@ public class ForgeCursorMod {
 				v -> new ForgeBasicCommonScreen(Minecraft.getInstance().screen));
 		fr.atesab.customcursormod.common.utils.I18n.SUPPLIER.forType(GameType.FORGE,
 				obj -> I18n.get(obj.format, obj.args));
+		CommonShaders.SUPPLIER.forType(GameType.FORGE, ForgeCommonShaders::getForge);
 	}
 
 	public ForgeCursorMod() {
@@ -145,13 +149,11 @@ public class ForgeCursorMod {
 	}
 
 	@SubscribeEvent
-	@SuppressWarnings("deprecation")
 	public void onDrawScreen(DrawScreenEvent.Post ev) {
 		Screen gui = ev.getGui();
 		CursorType newCursorType = CursorType.POINTER;
 		if (mod.getConfig().dynamicCursor) {
-			if (gui instanceof ForgeCommonScreenHandler) { // Our menu
-				ForgeCommonScreenHandler handle = (ForgeCommonScreenHandler) gui;
+			if (gui instanceof ForgeCommonScreenHandler handle) { // Our menu
 				CommonScreen cs = handle.cs;
 				for (CommonElement o : cs.childrens) {
 					if (!o.isEnable())
@@ -177,25 +179,23 @@ public class ForgeCursorMod {
 							else if (o instanceof EditBox) {
 								if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (EditBox) o))
 									newCursorType = CursorType.BEAM;
-							} else if (o instanceof AbstractButton) {
-								if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (Button) o))
+							} else if (o instanceof AbstractButton b) {
+								if (isHoverButton(ev.getMouseX(), ev.getMouseY(), b))
 									newCursorType = CursorType.HAND;
-							} else if (o instanceof SelectZone) {
-								SelectZone selectZone = (SelectZone) o;
+							} else if (o instanceof SelectZone selectZone) {
 								if (isHover(ev.getMouseX(), ev.getMouseY(), selectZone.getXPosition(),
 										selectZone.getYPosition(), selectZone.getWidth(), selectZone.getHeight())
 										&& selectZone.isEnable())
 									newCursorType = CursorType.CROSS;
 							} else if (o instanceof Iterable) {
 								for (Object e : (Iterable<?>) o)
-									if (e instanceof AbstractButton) {
-										if (isHoverButton(ev.getMouseX(), ev.getMouseY(), (AbstractButton) e))
+									if (e instanceof AbstractButton b) {
+										if (isHoverButton(ev.getMouseX(), ev.getMouseY(), b))
 											newCursorType = CursorType.HAND;
-									} else if (e instanceof EditBox) {
-										if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (EditBox) e))
+									} else if (e instanceof EditBox b) {
+										if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), b))
 											newCursorType = CursorType.BEAM;
-									} else if (e instanceof SelectZone) {
-										SelectZone selectZone = (SelectZone) e;
+									} else if (e instanceof SelectZone selectZone) {
 										if (selectZone.isHover(ev.getMouseX(), ev.getMouseY()) && selectZone.isEnable())
 											newCursorType = CursorType.CROSS;
 									} else
@@ -204,7 +204,7 @@ public class ForgeCursorMod {
 						} catch (Exception e) {
 						}
 					}
-			if (gui instanceof ContainerScreen container) {
+			if (gui instanceof AbstractContainerScreen<?> container) {
 				if (gui.getMinecraft().player.containerMenu.getCarried() != null
 						&& !gui.getMinecraft().player.containerMenu.getCarried().getItem().equals(Items.AIR))
 					newCursorType = CursorType.HAND_GRAB;
@@ -234,11 +234,11 @@ public class ForgeCursorMod {
 				CursorClick cursorClick = iterator.next();
 				int posX = (int) cursorClick.getPosX();
 				int posY = (int) cursorClick.getPosY();
-				gui.getMinecraft().getTextureManager().bindForSetup(
+				ForgeGuiUtils.getForge().setShader(ForgeCommonShaders.getForge().getPositionTexShader());
+				RenderSystem.setShaderTexture(0,
 						new ResourceLocation("textures/gui/click_" + (2 - cursorClick.getTime() / 3) + ".png"));
-				// RenderSystem.color3f(1.0F, 1.0F, 1.0F); TODO: check ok?
-				ForgeGuiUtils.getForge().drawScaledCustomSizeModalRect(posX - 8, posY - 8, 0, 0, 16, 16, 16, 16, 16,
-						16);
+				ForgeGuiUtils.getForge().drawScaledCustomSizeModalRect(posX - 8, posY - 8, 0, 0, 16, 16, 16, 16, 16, 16,
+						0xffffffff, true);
 				cursorClick.descreaseTime();
 				if (cursorClick.getTime() <= 0) {
 					iterator.remove();

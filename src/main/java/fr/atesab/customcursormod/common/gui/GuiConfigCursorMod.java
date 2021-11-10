@@ -8,8 +8,6 @@ import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import fr.atesab.customcursormod.common.CursorMod;
 import fr.atesab.customcursormod.common.config.CursorConfig;
 import fr.atesab.customcursormod.common.cursor.CursorType;
@@ -17,6 +15,7 @@ import fr.atesab.customcursormod.common.handler.CommonButton;
 import fr.atesab.customcursormod.common.handler.CommonButtonValue;
 import fr.atesab.customcursormod.common.handler.CommonMatrixStack;
 import fr.atesab.customcursormod.common.handler.CommonScreen;
+import fr.atesab.customcursormod.common.handler.CommonShaders;
 import fr.atesab.customcursormod.common.handler.GuiUtils;
 import fr.atesab.customcursormod.common.handler.StringCommonText;
 import fr.atesab.customcursormod.common.handler.CommonScreen.ScreenListener;
@@ -58,12 +57,13 @@ public class GuiConfigCursorMod extends ScreenListener {
 			int imageWidth = image.getWidth();
 			int imageHeight = image.getWidth();
 			int numImage = image.getHeight() / image.getWidth();
-			GuiUtils.get().drawGradientRect(stack, getScreen().getBlitOffset(), posX, posY, posX + 20, posY + 20,
-					-1072689136, -804253680);
-			cursorConfig.getResourceLocation().bind();
-			// RenderSystem.color3f(1.0F, 1.0F, 1.0F); TODO: check ok?
-			GuiUtils.get().drawScaledCustomSizeModalRect(posX, posY, 0, 0, imageWidth, imageHeight, 20, 20, imageWidth,
-					imageHeight * numImage);
+			var gutils = GuiUtils.get();
+			gutils.drawGradientRect(stack, getScreen().getBlitOffset(), posX, posY, posX + 20, posY + 20, -1072689136,
+					-804253680);
+			gutils.setShader(CommonShaders.get().getPositionTexShader());
+			cursorConfig.getResourceLocation().setShaderTexture();
+			gutils.drawScaledCustomSizeModalRect(posX, posY, 0, 0, imageWidth, imageHeight, 20, 20, imageWidth,
+					imageHeight * numImage, 0xffffffff, true);
 		} catch (Exception e) {
 			// hide
 		}

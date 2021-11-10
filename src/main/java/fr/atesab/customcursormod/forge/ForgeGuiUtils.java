@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 
 import fr.atesab.customcursormod.common.handler.CommonMatrixStack;
+import fr.atesab.customcursormod.common.handler.CommonShader;
 import fr.atesab.customcursormod.common.handler.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -42,52 +43,11 @@ public class ForgeGuiUtils extends GuiUtils {
 	 * @param height     height
 	 * @param tileWidth  tile width
 	 * @param tileHeight tile height
-	 */
-	@Override
-	public void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width,
-			int height, float tileWidth, float tileHeight) {
-		drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight, 0xffffff);
-	}
-
-	/**
-	 * Draws a scaled, textured, tiled modal rect at z = 0. This method isn't used
-	 * anywhere in vanilla code.
-	 * 
-	 * @param x          x location
-	 * @param y          y location
-	 * @param u          x uv location
-	 * @param v          y uv location
-	 * @param uWidth     uv width
-	 * @param vHeight    uv height
-	 * @param width      width
-	 * @param height     height
-	 * @param tileWidth  tile width
-	 * @param tileHeight tile height
-	 * @param color      tile color
-	 */
-	public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width,
-			int height, float tileWidth, float tileHeight, int color) {
-		drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight, color, false);
-	}
-
-	/**
-	 * Draws a scaled, textured, tiled modal rect at z = 0. This method isn't used
-	 * anywhere in vanilla code.
-	 * 
-	 * @param x          x location
-	 * @param y          y location
-	 * @param u          x uv location
-	 * @param v          y uv location
-	 * @param uWidth     uv width
-	 * @param vHeight    uv height
-	 * @param width      width
-	 * @param height     height
-	 * @param tileWidth  tile width
-	 * @param tileHeight tile height
 	 * @param color      tile color
 	 * @param useAlpha   use the alpha of the color
 	 */
-	public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width,
+	@Override
+	public void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width,
 			int height, float tileWidth, float tileHeight, int color, boolean useAlpha) {
 		float scaleX = 1.0F / tileWidth;
 		float scaleY = 1.0F / tileHeight;
@@ -112,45 +72,8 @@ public class ForgeGuiUtils extends GuiUtils {
 		tesselator.end();
 	}
 
-	/**
-	 * Draw a rectangle with a vertical gradient
-	 * 
-	 * @param stack      matrix stack
-	 * @param left       left location
-	 * @param top        top location
-	 * @param right      right location
-	 * @param bottom     bottom location
-	 * @param startColor startColor color
-	 * @param endColor   endColor color
-	 * @param zLevel     zLevel of the screen
-	 * 
-	 * @see #drawGradientRect(PoseStack, int, int, int, int, int, int, int, int,
-	 *      float)
-	 * @since 2.0
-	 */
-	public static void drawGradientRect(PoseStack stack, int left, int top, int right, int bottom, int startColor,
-			int endColor, float zLevel) {
-		drawGradientRect(stack, left, top, right, bottom, startColor, startColor, endColor, endColor, zLevel);
-	}
-
-	/**
-	 * Draw a gradient rectangle
-	 * 
-	 * @param stack            matrix stack
-	 * @param left             left location
-	 * @param top              top location
-	 * @param right            right location
-	 * @param bottom           bottom location
-	 * @param rightTopColor    rightTopColor color (ARGB)
-	 * @param leftTopColor     leftTopColor color (ARGB)
-	 * @param leftBottomColor  leftBottomColor color (ARGB)
-	 * @param rightBottomColor rightBottomColor color (ARGB)
-	 * @param zLevel           zLevel of the screen
-	 * 
-	 * @see #drawGradientRect(PoseStack, int, int, int, int, int, int, float)
-	 * @since 2.0
-	 */
-	public static void drawGradientRect(PoseStack stack, int left, int top, int right, int bottom, int rightTopColor,
+	@Override
+	public void drawGradientRect(CommonMatrixStack stack, int left, int top, int right, int bottom, int rightTopColor,
 			int leftTopColor, int leftBottomColor, int rightBottomColor, float zLevel) {
 		float alphaRightTop = (float) (rightTopColor >> 24 & 255) / 255.0F;
 		float redRightTop = (float) (rightTopColor >> 16 & 255) / 255.0F;
@@ -177,7 +100,7 @@ public class ForgeGuiUtils extends GuiUtils {
 				GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
 				GlStateManager.DestFactor.ZERO);
 		bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-		var mat = stack.last().pose();
+		var mat = stack.<PoseStack>getHandle().last().pose();
 		bufferbuilder.vertex(mat, right, top, zLevel).color(redRightTop, greenRightTop, blueRightTop, alphaRightTop)
 				.endVertex();
 		bufferbuilder.vertex(mat, left, top, zLevel).color(redLeftTop, greenLeftTop, blueLeftTop, alphaLeftTop)
@@ -198,8 +121,12 @@ public class ForgeGuiUtils extends GuiUtils {
 	}
 
 	@Override
-	public void drawGradientRect(CommonMatrixStack stack, float zLevel, int left, int top, int right, int bottom,
-			int startColor, int endColor) {
-		drawGradientRect(stack.getHandle(), left, top, right, bottom, startColor, endColor, zLevel);
+	public void setShaderColor(float r, float g, float b, float a) {
+		RenderSystem.setShaderColor(r, g, b, a);
+	}
+
+	@Override
+	public void setShader(CommonShader shader) {
+		RenderSystem.setShader(shader.getHandle());
 	}
 }
