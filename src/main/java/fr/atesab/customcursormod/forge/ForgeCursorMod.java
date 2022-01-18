@@ -40,9 +40,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
-import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
-import net.minecraftforge.client.event.GuiScreenEvent.MouseClickedEvent;
+import net.minecraftforge.client.ConfigGuiHandler.ConfigGuiFactory;
+import net.minecraftforge.client.event.ScreenEvent.DrawScreenEvent;
+import net.minecraftforge.client.event.ScreenEvent.InitScreenEvent;
+import net.minecraftforge.client.event.ScreenEvent.MouseClickedEvent;
+import net.minecraftforge.client.gui.ModListScreen;
+import net.minecraftforge.client.gui.widget.ModListWidget;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
@@ -53,9 +56,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmlclient.ConfigGuiHandler.ConfigGuiFactory;
-import net.minecraftforge.fmlclient.gui.screen.ModListScreen;
-import net.minecraftforge.fmlclient.gui.widget.ModListWidget;
 
 @OnlyIn(Dist.CLIENT)
 @Mod(CursorMod.MOD_ID)
@@ -150,7 +150,7 @@ public class ForgeCursorMod {
 
 	@SubscribeEvent
 	public void onDrawScreen(DrawScreenEvent.Post ev) {
-		Screen gui = ev.getGui();
+		Screen gui = ev.getScreen();
 		CursorType newCursorType = CursorType.POINTER;
 		if (mod.getConfig().dynamicCursor) {
 			if (gui instanceof ForgeCommonScreenHandler handle) { // Our menu
@@ -230,7 +230,7 @@ public class ForgeCursorMod {
 
 			for (CursorType cursorType : mod.getCursors().keySet())
 				if (cursorType.getCursorTester() != null && cursorType.getCursorTester().testCursor(newCursorType,
-						commonScreen, ev.getMouseX(), ev.getMouseY(), ev.getRenderPartialTicks())) {
+						commonScreen, ev.getMouseX(), ev.getMouseY(), ev.getPartialTicks())) {
 					newCursorType = cursorType;
 					break;
 				}
@@ -270,7 +270,7 @@ public class ForgeCursorMod {
 	}
 
 	@SubscribeEvent
-	public void onInitScreen(InitGuiEvent.Post ev) {
+	public void onInitScreen(InitScreenEvent.Post ev) {
 		mod.forceNextCursor();
 	}
 
