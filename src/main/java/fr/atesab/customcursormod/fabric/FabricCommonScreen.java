@@ -11,6 +11,7 @@ import net.minecraft.text.Text;
 public class FabricCommonScreen extends CommonScreen {
 	class FabricCommonScreenHandler extends Screen {
 		FabricCommonScreen cs;
+
 		FabricCommonScreenHandler(Text title) {
 			super(title);
 			cs = FabricCommonScreen.this;
@@ -77,7 +78,7 @@ public class FabricCommonScreen extends CommonScreen {
 
 	@Override
 	public void displayScreen() {
-		MinecraftClient.getInstance().openScreen(handle);
+		MinecraftClient.getInstance().setScreen(handle);
 	}
 
 	@Override

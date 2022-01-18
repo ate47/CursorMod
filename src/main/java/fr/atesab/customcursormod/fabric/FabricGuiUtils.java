@@ -85,7 +85,7 @@ public class FabricGuiUtils extends GuiUtils {
 		RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA,
 				GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
 		bufferbuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		var mat = stack.<MatrixStack>getHandle().peek().getModel();
+		var mat = stack.<MatrixStack>getHandle().peek().getPositionMatrix();
 		bufferbuilder.vertex(mat, right, top, zLevel).color(redRightTop, greenRightTop, blueRightTop, alphaRightTop)
 				.next();
 		bufferbuilder.vertex(mat, left, top, zLevel).color(redLeftTop, greenLeftTop, blueLeftTop, alphaLeftTop).next();

@@ -20,7 +20,7 @@ public class FabricBasicCommonScreen extends CommonScreen {
 
 	@Override
 	public void displayScreen() {
-		MinecraftClient.getInstance().openScreen(handle);
+		MinecraftClient.getInstance().setScreen(handle);
 	}
 
 	@Override
