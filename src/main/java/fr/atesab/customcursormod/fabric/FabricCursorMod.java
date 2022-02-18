@@ -148,6 +148,8 @@ public class FabricCursorMod implements ClientModInitializer, ClientTickEvents.S
 
 	@Override
 	public void afterRender(Screen gui, MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
+		if (gui == null)
+			return;
 		CursorType newCursorType = CursorType.POINTER;
 		if (mod.getConfig().dynamicCursor) {
 			if (gui instanceof FabricCommonScreenHandler handle) { // Our menu
