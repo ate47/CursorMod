@@ -5,11 +5,10 @@ import fr.atesab.customcursormod.common.handler.CommonTextField;
 import fr.atesab.customcursormod.fabric.mixin.AbstractButtonWidgetMixin;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 public class FabricCommonTextField extends CommonTextField {
-	private TextFieldWidget handle;
+	private final TextFieldWidget handle;
 
 	public FabricCommonTextField(TextFieldWidget handle) {
 		this.handle = handle;
@@ -17,7 +16,7 @@ public class FabricCommonTextField extends CommonTextField {
 
 	public FabricCommonTextField(CommonTextFieldObject obj) {
 		this.handle = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, obj.xPosition, obj.yPosition,
-				obj.width, obj.height, new LiteralText(""));
+				obj.width, obj.height, Text.literal(""));
 	}
 
 	@Override
@@ -97,7 +96,7 @@ public class FabricCommonTextField extends CommonTextField {
 
 	@Override
 	public void render(CommonMatrixStack stack, int mouseX, int mouseY, float partialTicks) {
-		handle.render(stack.<MatrixStack>getHandle(), mouseX, mouseY, partialTicks);
+		handle.render(stack.getHandle(), mouseX, mouseY, partialTicks);
 	}
 
 	@Override

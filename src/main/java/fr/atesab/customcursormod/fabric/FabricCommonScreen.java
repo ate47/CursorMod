@@ -64,16 +64,16 @@ public class FabricCommonScreen extends CommonScreen {
 		}
 	}
 
-	private FabricCommonScreenHandler handle;
+	private final FabricCommonScreenHandler handle;
 
 	public FabricCommonScreen(CommonScreen.CommonScreenObject obj) {
 		super(obj.parent, obj.listener);
-		handle = new FabricCommonScreenHandler(obj.title.<Text>getHandle());
+		handle = new FabricCommonScreenHandler(obj.title.getHandle());
 	}
 
 	@Override
 	public void renderDefaultBackground(CommonMatrixStack stack) {
-		handle.renderBackground(stack.<MatrixStack>getHandle());
+		handle.renderBackground(stack.getHandle());
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class FabricCommonScreen extends CommonScreen {
 
 	@Override
 	public void drawString(CommonMatrixStack stack, String text, float x, float y, int color) {
-		handle.getTextRenderer().draw(stack.<MatrixStack>getHandle(), text, x, y, color);
+		handle.getTextRenderer().draw(stack.getHandle(), text, x, y, color);
 	}
 
 	@Override

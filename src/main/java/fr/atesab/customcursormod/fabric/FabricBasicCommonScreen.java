@@ -6,7 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 
 public class FabricBasicCommonScreen extends CommonScreen {
-	private Screen handle;
+	private final Screen handle;
 
 	public FabricBasicCommonScreen(Screen handle) {
 		super(null);

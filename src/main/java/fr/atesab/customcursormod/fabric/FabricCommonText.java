@@ -5,7 +5,7 @@ import fr.atesab.customcursormod.common.handler.CommonTextAppendable;
 import net.minecraft.text.Text;
 
 public class FabricCommonText extends CommonText {
-	private Text handle;
+	private final Text handle;
 	public FabricCommonText(Text handle) {
 		this.handle = handle;
 	}

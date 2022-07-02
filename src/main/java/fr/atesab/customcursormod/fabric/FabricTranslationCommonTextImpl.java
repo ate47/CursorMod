@@ -2,17 +2,21 @@ package fr.atesab.customcursormod.fabric;
 
 import fr.atesab.customcursormod.common.handler.CommonText;
 import fr.atesab.customcursormod.common.handler.TranslationCommonText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 
 public class FabricTranslationCommonTextImpl extends TranslationCommonText {
-	
-	private TranslatableText handle;
+
+	private final MutableText handle;
 	public FabricTranslationCommonTextImpl(String text, Object... args) {
-		handle = new TranslatableText(text, args);
+		this(Text.translatable(text, args));
 	}
-	public FabricTranslationCommonTextImpl(TranslatableText handle) {
+	public FabricTranslationCommonTextImpl(MutableText handle) {
 		this.handle = handle;
+		if (!(handle.getContent() instanceof TranslatableTextContent)) {
+			throw new IllegalArgumentException("not a translatable text!");
+		}
 	}
 
 
@@ -23,10 +27,14 @@ public class FabricTranslationCommonTextImpl extends TranslationCommonText {
 
 	@Override
 	public String getKey() {
-		return handle.getKey();
+		if (handle.getContent() instanceof TranslatableTextContent content) {
+			return content.getKey();
+		}
+		throw new Error("Key element wasn't a translatable content");
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> T getHandle() {
 		return (T) handle;
 	}

@@ -44,16 +44,16 @@ public class FabricGuiUtils extends GuiUtils {
 		var tesselator = Tessellator.getInstance();
 		var bufferbuilder = tesselator.getBuffer();
 		bufferbuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferbuilder.vertex((double) x, (double) (y + height), 0.0D)
-				.texture((float) (u * scaleX), (float) ((v + (float) vHeight) * scaleY)).color(red, green, blue, alpha)
+		bufferbuilder.vertex(x, y + height, 0.0D)
+				.texture(u * scaleX, (v + (float) vHeight) * scaleY).color(red, green, blue, alpha)
 				.next();
-		bufferbuilder.vertex((double) (x + width), (double) (y + height), 0.0D)
-				.texture((float) ((u + (float) uWidth) * scaleX), (float) ((v + (float) vHeight) * scaleY))
+		bufferbuilder.vertex(x + width, y + height, 0.0D)
+				.texture((u + (float) uWidth) * scaleX, (v + (float) vHeight) * scaleY)
 				.color(red, green, blue, alpha).next();
-		bufferbuilder.vertex((double) (x + width), (double) y, 0.0D)
-				.texture((float) ((u + (float) uWidth) * scaleX), (float) (v * scaleY)).color(red, green, blue, alpha)
+		bufferbuilder.vertex(x + width, y, 0.0D)
+				.texture((u + (float) uWidth) * scaleX, v * scaleY).color(red, green, blue, alpha)
 				.next();
-		bufferbuilder.vertex((double) x, (double) y, 0.0D).texture((float) (u * scaleX), (float) (v * scaleY))
+		bufferbuilder.vertex(x, y, 0.0D).texture(u * scaleX, v * scaleY)
 				.color(red, green, blue, alpha).next();
 		tesselator.draw();
 	}
@@ -93,8 +93,7 @@ public class FabricGuiUtils extends GuiUtils {
 				.color(redLeftBottom, greenLeftBottom, blueLeftBottom, alphaLeftBottom).next();
 		bufferbuilder.vertex(mat, right, bottom, zLevel)
 				.color(redRightBottom, greenRightBottom, blueRightBottom, alphaRightBottom).next();
-		bufferbuilder.end();
-		BufferRenderer.draw(bufferbuilder);
+		BufferRenderer.drawWithShader(bufferbuilder.end());
 		RenderSystem.disableBlend();
 		RenderSystem.enableTexture();
 	}

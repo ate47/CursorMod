@@ -3,16 +3,16 @@ package fr.atesab.customcursormod.fabric;
 import fr.atesab.customcursormod.common.handler.CommonText;
 import fr.atesab.customcursormod.common.handler.CommonTextAppendable;
 import fr.atesab.customcursormod.common.handler.StringCommonText;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 public class FabricStringCommonTextImpl extends StringCommonText {
-	
-	private LiteralText handle;
+
+	private final MutableText handle;
 	public FabricStringCommonTextImpl(String text) {
-		handle = new LiteralText(text);
+		handle = Text.literal(text);
 	}
-	public FabricStringCommonTextImpl(LiteralText handle) {
+	public FabricStringCommonTextImpl(MutableText handle) {
 		this.handle = handle;
 	}
 
@@ -23,6 +23,7 @@ public class FabricStringCommonTextImpl extends StringCommonText {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T> T getHandle() {
 		return (T) handle;
 	}
