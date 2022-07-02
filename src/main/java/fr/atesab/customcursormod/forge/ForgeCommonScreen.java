@@ -1,19 +1,19 @@
 package fr.atesab.customcursormod.forge;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import fr.atesab.customcursormod.common.handler.CommonMatrixStack;
 import fr.atesab.customcursormod.common.handler.CommonScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 public class ForgeCommonScreen extends CommonScreen {
 	class ForgeCommonScreenHandler extends Screen {
 		ForgeCommonScreen cs;
 
-		ForgeCommonScreenHandler(BaseComponent title) {
+		ForgeCommonScreenHandler(Component title) {
 			super(title);
 			cs = ForgeCommonScreen.this;
 		}
@@ -26,7 +26,7 @@ public class ForgeCommonScreen extends CommonScreen {
 		}
 
 		@Override
-		public void resize(Minecraft client, int width, int height) {
+		public void resize(@NotNull Minecraft client, int width, int height) {
 			ForgeCommonScreen.this.resize(width, height);
 			super.resize(client, width, height);
 		}
@@ -55,7 +55,7 @@ public class ForgeCommonScreen extends CommonScreen {
 		}
 
 		@Override
-		public void render(PoseStack matrices, int mouseX, int mouseY, float partialTicks) {
+		public void render(@NotNull PoseStack matrices, int mouseX, int mouseY, float partialTicks) {
 			ForgeCommonScreen.this.render(new ForgeCommonMatrixStack(matrices), mouseX, mouseY, partialTicks);
 			super.render(matrices, mouseX, mouseY, partialTicks);
 		}
@@ -65,7 +65,7 @@ public class ForgeCommonScreen extends CommonScreen {
 		}
 	}
 
-	private ForgeCommonScreenHandler handle;
+	private final ForgeCommonScreenHandler handle;
 
 	public ForgeCommonScreen(CommonScreen.CommonScreenObject obj) {
 		super(obj.parent, obj.listener);

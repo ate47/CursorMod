@@ -58,16 +58,16 @@ public class ForgeGuiUtils extends GuiUtils {
 		Tesselator tesselator = Tesselator.getInstance();
 		BufferBuilder bufferbuilder = tesselator.getBuilder();
 		bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-		bufferbuilder.vertex((double) x, (double) (y + height), 0.0D)
-				.uv((float) (u * scaleX), (float) ((v + (float) vHeight) * scaleY)).color(red, green, blue, alpha)
+		bufferbuilder.vertex(x, y + height, 0.0D)
+				.uv(u * scaleX, (v + (float) vHeight) * scaleY).color(red, green, blue, alpha)
 				.endVertex();
-		bufferbuilder.vertex((double) (x + width), (double) (y + height), 0.0D)
-				.uv((float) ((u + (float) uWidth) * scaleX), (float) ((v + (float) vHeight) * scaleY))
+		bufferbuilder.vertex(x + width, y + height, 0.0D)
+				.uv((u + (float) uWidth) * scaleX, (v + (float) vHeight) * scaleY)
 				.color(red, green, blue, alpha).endVertex();
-		bufferbuilder.vertex((double) (x + width), (double) y, 0.0D)
-				.uv((float) ((u + (float) uWidth) * scaleX), (float) (v * scaleY)).color(red, green, blue, alpha)
+		bufferbuilder.vertex(x + width, y, 0.0D)
+				.uv((u + (float) uWidth) * scaleX, v * scaleY).color(red, green, blue, alpha)
 				.endVertex();
-		bufferbuilder.vertex((double) x, (double) y, 0.0D).uv((float) (u * scaleX), (float) (v * scaleY))
+		bufferbuilder.vertex(x, y, 0.0D).uv(u * scaleX, v * scaleY)
 				.color(red, green, blue, alpha).endVertex();
 		tesselator.end();
 	}
@@ -109,8 +109,7 @@ public class ForgeGuiUtils extends GuiUtils {
 				.color(redLeftBottom, greenLeftBottom, blueLeftBottom, alphaLeftBottom).endVertex();
 		bufferbuilder.vertex(mat, right, bottom, zLevel)
 				.color(redRightBottom, greenRightBottom, blueRightBottom, alphaRightBottom).endVertex();
-		bufferbuilder.end();
-		BufferUploader.end(bufferbuilder);
+		BufferUploader.drawWithShader(bufferbuilder.end());
 		RenderSystem.disableBlend();
 		RenderSystem.enableTexture();
 	}

@@ -1,7 +1,9 @@
 package fr.atesab.customcursormod.forge;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +36,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -60,7 +63,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @OnlyIn(Dist.CLIENT)
 @Mod(CursorMod.MOD_ID)
 public class ForgeCursorMod {
-	private CursorMod mod = new CursorMod(GameType.FORGE);
+	private final CursorMod mod = new CursorMod(GameType.FORGE);
 	static {
 		SelectZone.SUPPLIER.forType(GameType.FORGE,
 				o -> new ForgeGuiSelectZone(o.xPosition, o.yPosition, o.width, o.height));
@@ -88,7 +91,7 @@ public class ForgeCursorMod {
 
 	private void checkModList(Screen screen) {
 		// enabling the config button
-		if (screen != null && screen instanceof ModListScreen) {
+		if (screen instanceof ModListScreen) {
 			ModListWidget.ModEntry entry = getFirstFieldOfTypeInto(ModListWidget.ModEntry.class, screen);
 			if (entry != null) {
 				var info = entry.getInfo();
@@ -107,7 +110,7 @@ public class ForgeCursorMod {
 	}
 
 	private List<Field[]> getDeclaredField(Class<?> cls) {
-		List<Field[]> l = new ArrayList<Field[]>();
+		List<Field[]> l = new ArrayList<>();
 		l.add(cls.getDeclaredFields());
 		while (!cls.equals(Object.class)) {
 			cls = cls.getSuperclass();
@@ -174,9 +177,11 @@ public class ForgeCursorMod {
 						try {
 							f.setAccessible(true);
 							Object o = f.get(gui);
-							if (o == null)
+							if (o == null) {
 								continue;
-							else if (o instanceof EditBox) {
+							}
+
+							if (o instanceof EditBox) {
 								if (isHoverTextField(ev.getMouseX(), ev.getMouseY(), (EditBox) o))
 									newCursorType = CursorType.BEAM;
 							} else if (o instanceof AbstractButton b) {
@@ -202,11 +207,12 @@ public class ForgeCursorMod {
 										break;
 							}
 						} catch (Exception e) {
+							// ignore
 						}
 					}
 			if (gui instanceof AbstractContainerScreen<?> container) {
-				if (gui.getMinecraft().player.containerMenu.getCarried() != null
-						&& !gui.getMinecraft().player.containerMenu.getCarried().getItem().equals(Items.AIR))
+				LocalPlayer player = gui.getMinecraft().player;
+				if (player != null && !player.containerMenu.getCarried().getItem().equals(Items.AIR))
 					newCursorType = CursorType.HAND_GRAB;
 				else if (container.getSlotUnderMouse() != null && container.getSlotUnderMouse().hasItem())
 					newCursorType = CursorType.HAND;
@@ -230,7 +236,7 @@ public class ForgeCursorMod {
 
 			for (CursorType cursorType : mod.getCursors().keySet())
 				if (cursorType.getCursorTester() != null && cursorType.getCursorTester().testCursor(newCursorType,
-						commonScreen, ev.getMouseX(), ev.getMouseY(), ev.getPartialTicks())) {
+						commonScreen, ev.getMouseX(), ev.getMouseY(), ev.getPartialTick())) {
 					newCursorType = cursorType;
 					break;
 				}
@@ -244,10 +250,10 @@ public class ForgeCursorMod {
 				int posY = (int) cursorClick.getPosY();
 				ForgeGuiUtils.getForge().setShader(ForgeCommonShaders.getForge().getPositionTexShader());
 				RenderSystem.setShaderTexture(0,
-						new ResourceLocation("textures/gui/click_" + (2 - cursorClick.getTime() / 3) + ".png"));
+						new ResourceLocation("textures/gui/click_" + cursorClick.getImage() + ".png"));
 				ForgeGuiUtils.getForge().drawScaledCustomSizeModalRect(posX - 8, posY - 8, 0, 0, 16, 16, 16, 16, 16, 16,
 						0xffffffff, true);
-				cursorClick.descreaseTime();
+				cursorClick.descreaseTime(ev.getPartialTick());
 				if (cursorClick.getTime() <= 0) {
 					iterator.remove();
 				}
@@ -277,12 +283,16 @@ public class ForgeCursorMod {
 	@SubscribeEvent
 	public void onMouseClicked(MouseClickedEvent.Pre ev) {
 		if (ev.getButton() == 0 && mod.getConfig().clickAnimation)
-			mod.getCursorClicks().add(new CursorClick(6, ev.getMouseX(), ev.getMouseY()));
+			mod.getCursorClicks().add(new CursorClick(ev.getMouseX(), ev.getMouseY()));
 	}
 
 	private void setup(FMLLoadCompleteEvent ev) {
 		File saveDir = new File(Minecraft.getInstance().gameDirectory, "config");
-		saveDir.mkdirs();
+		try {
+			Files.createDirectories(saveDir.toPath());
+		} catch (IOException e) {
+			throw new RuntimeException("can't create directories: " + saveDir, e);
+		}
 		File save = new File(saveDir, CursorMod.MOD_ID + ".json");
 		mod.getConfig().sync(save);
 		mod.getConfig().sync(save);

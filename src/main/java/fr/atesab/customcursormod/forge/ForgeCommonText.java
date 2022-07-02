@@ -5,7 +5,7 @@ import fr.atesab.customcursormod.common.handler.CommonTextAppendable;
 import net.minecraft.network.chat.Component;
 
 public class ForgeCommonText extends CommonText {
-	private Component handle;
+	private final Component handle;
 
 	public ForgeCommonText(Component handle) {
 		this.handle = handle;

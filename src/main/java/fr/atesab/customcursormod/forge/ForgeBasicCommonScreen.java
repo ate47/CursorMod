@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 
 public class ForgeBasicCommonScreen extends CommonScreen {
-	private Screen handle;
+	private final Screen handle;
 
 	public ForgeBasicCommonScreen(Screen handle) {
 		super(null);

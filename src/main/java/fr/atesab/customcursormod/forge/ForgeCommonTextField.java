@@ -1,15 +1,13 @@
 package fr.atesab.customcursormod.forge;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import fr.atesab.customcursormod.common.handler.CommonMatrixStack;
 import fr.atesab.customcursormod.common.handler.CommonTextField;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 public class ForgeCommonTextField extends CommonTextField {
-	private EditBox handle;
+	private final EditBox handle;
 
 	public ForgeCommonTextField(EditBox handle) {
 		this.handle = handle;
@@ -17,7 +15,7 @@ public class ForgeCommonTextField extends CommonTextField {
 
 	public ForgeCommonTextField(CommonTextFieldObject obj) {
 		this.handle = new EditBox(Minecraft.getInstance().font, obj.xPosition, obj.yPosition, obj.width, obj.height,
-				new TextComponent(""));
+				Component.literal(""));
 	}
 
 	@Override

@@ -2,12 +2,12 @@ package fr.atesab.customcursormod.forge;
 
 import fr.atesab.customcursormod.common.handler.CommonText;
 import fr.atesab.customcursormod.common.handler.CommonTextAppendable;
-import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 public class ForgeCommonTextAppendable extends CommonTextAppendable {
 
-	private MutableComponent handle;
+	private final MutableComponent handle;
 
 	public ForgeCommonTextAppendable(MutableComponent handle) {
 		this.handle = handle;
@@ -31,7 +31,7 @@ public class ForgeCommonTextAppendable extends CommonTextAppendable {
 
 	@Override
 	public CommonTextAppendable append(CommonText text) {
-		return new ForgeCommonTextAppendable(handle.append(text.<BaseComponent>getHandle()));
+		return new ForgeCommonTextAppendable(handle.append(text.<Component>getHandle()));
 	}
 
 }

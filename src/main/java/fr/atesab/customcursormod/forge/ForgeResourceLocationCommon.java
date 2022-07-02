@@ -2,16 +2,18 @@ package fr.atesab.customcursormod.forge;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import fr.atesab.customcursormod.common.handler.ResourceLocationCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
 
 public class ForgeResourceLocationCommon extends ResourceLocationCommon {
 
-	private ResourceLocation resource;
+	private final ResourceLocation resource;
 
 	public ForgeResourceLocationCommon(String link) {
 		resource = new ResourceLocation(link);
@@ -33,6 +35,10 @@ public class ForgeResourceLocationCommon extends ResourceLocationCommon {
 
 	@Override
 	public InputStream openStream() throws IOException {
-		return Minecraft.getInstance().getResourceManager().getResource(resource).getInputStream();
+		Optional<Resource> res = Minecraft.getInstance().getResourceManager().getResource(resource);
+		if (res.isEmpty()) {
+			return null;
+		}
+		return res.get().open();
 	}
 }

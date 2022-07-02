@@ -3,18 +3,19 @@ package fr.atesab.customcursormod.forge;
 import fr.atesab.customcursormod.common.handler.CommonText;
 import fr.atesab.customcursormod.common.handler.CommonTextAppendable;
 import fr.atesab.customcursormod.common.handler.TranslationCommonText;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 
 public class ForgeTranslationCommonTextImpl extends TranslationCommonText {
 
-	private TranslatableComponent handle;
+	private final MutableComponent handle;
 
 	public ForgeTranslationCommonTextImpl(String text, Object... args) {
-		handle = new TranslatableComponent(text, args);
+		handle = Component.translatable(text, args);
 	}
 
-	public ForgeTranslationCommonTextImpl(TranslatableComponent handle) {
+	public ForgeTranslationCommonTextImpl(MutableComponent handle) {
 		this.handle = handle;
 	}
 
@@ -25,7 +26,10 @@ public class ForgeTranslationCommonTextImpl extends TranslationCommonText {
 
 	@Override
 	public String getKey() {
-		return handle.getKey();
+		if (handle.getContents() instanceof TranslatableContents content) {
+			return content.getKey();
+		}
+		throw new Error("Key element wasn't a translatable content");
 	}
 
 	@Override
