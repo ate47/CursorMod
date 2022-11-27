@@ -43,10 +43,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.ConfigGuiHandler.ConfigGuiFactory;
-import net.minecraftforge.client.event.ScreenEvent.DrawScreenEvent;
-import net.minecraftforge.client.event.ScreenEvent.InitScreenEvent;
-import net.minecraftforge.client.event.ScreenEvent.MouseClickedEvent;
+import net.minecraftforge.client.ConfigScreenHandler;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.gui.ModListScreen;
 import net.minecraftforge.client.gui.widget.ModListWidget;
 import net.minecraftforge.common.MinecraftForge;
@@ -85,8 +83,8 @@ public class ForgeCursorMod {
 	public ForgeCursorMod() {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		MinecraftForge.EVENT_BUS.register(this);
-		ModLoadingContext.get().registerExtensionPoint(ConfigGuiFactory.class, () -> new ConfigGuiFactory((mc,
-				parent) -> ((ForgeCommonScreen) GuiConfig.create(new ForgeBasicCommonScreen(parent))).getHandle()));
+		ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((mc,
+																																						 parent) -> ((ForgeCommonScreen) GuiConfig.create(new ForgeBasicCommonScreen(parent))).getHandle()));
 	}
 
 	private void checkModList(Screen screen) {
@@ -98,7 +96,7 @@ public class ForgeCursorMod {
 				if (info != null) {
 					Optional<? extends ModContainer> op = ModList.get().getModContainerById(info.getModId());
 					if (op.isPresent()) {
-						boolean value = op.get().getCustomExtension(ConfigGuiFactory.class).isPresent();
+						boolean value = op.get().getCustomExtension(ConfigScreenHandler.ConfigScreenFactory.class).isPresent();
 						String configText = I18n.get("fml.menu.mods.config");
 						for (var b : screen.children())
 							if (b instanceof Button && ((Button) b).getMessage().getString().equals(configText))
@@ -152,7 +150,7 @@ public class ForgeCursorMod {
 	}
 
 	@SubscribeEvent
-	public void onDrawScreen(DrawScreenEvent.Post ev) {
+	public void onDrawScreen(ScreenEvent.Render.Post ev) {
 		Screen gui = ev.getScreen();
 		CursorType newCursorType = CursorType.POINTER;
 		if (mod.getConfig().dynamicCursor) {
@@ -276,12 +274,12 @@ public class ForgeCursorMod {
 	}
 
 	@SubscribeEvent
-	public void onInitScreen(InitScreenEvent.Post ev) {
+	public void onInitScreen(ScreenEvent.Init.Post ev) {
 		mod.forceNextCursor();
 	}
 
 	@SubscribeEvent
-	public void onMouseClicked(MouseClickedEvent.Pre ev) {
+	public void onMouseClicked(ScreenEvent.MouseButtonPressed.Pre ev) {
 		if (ev.getButton() == 0 && mod.getConfig().clickAnimation)
 			mod.getCursorClicks().add(new CursorClick(ev.getMouseX(), ev.getMouseY()));
 	}
