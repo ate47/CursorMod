@@ -1,0 +1,27 @@
+{
+	"cursormod.gui.config": "Menu de configuração",
+	"cursormod.gui.cursorList": "Menu de configuração dos cursores",
+	"cursormod.gui.configCursor": "Menu de configuração do cursor",
+
+    "cursormod.config.xhotspot": "X HotSpot",
+    "cursormod.config.yhotspot": "Y HotSpot",
+    "cursormod.config.location": "Localização de arquivo",
+    "cursormod.config.dynCursor": "Cursor Dinâmico",
+    "cursormod.config.clickAnim": "Clique em Animação",
+    "cursormod.config.yes": "Sim",
+    "cursormod.config.no": "Não",
+
+    "cursormod.gui.error": "Erro ao carregar o cursor",
+    "cursormod.gui.animate": "Animar",
+    "cursormod.gui.cancel": "Cancelar",
+    "cursormod.gui.default": "Valor padrão",
+
+    "cursormod.cursor.pointer": "Ponteiro",
+    "cursormod.cursor.hand": "Mão",
+    "cursormod.cursor.hand_grab": "Agarrando a mão",
+    "cursormod.cursor.beam": "Feixe",
+    "cursormod.cursor.cross": "Cruz",
+
+    "cursormod.licence": "Licença %s",
+    "cursormod.authors": "Por %s"
+}
