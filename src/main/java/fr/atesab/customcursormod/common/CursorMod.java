@@ -20,7 +20,7 @@ public class CursorMod {
 	private static CursorMod instance;
 	public static final String MOD_ID = "customcursormod";
 	public static final String MOD_NAME = "Custom Cursor Mod";
-	public static final String MOD_VERSION = "1.3.0";
+	public static final String MOD_VERSION = "1.3.1.1";
 	public static final String MOD_AUTHORS = "ATE47, KevinFernandezDominguez";
 	public static final String MOD_LICENCE = "GNU GPL 3";
 	public static final Logger logger = Logger.getLogger(MOD_NAME);
