@@ -126,9 +126,9 @@ public class CursorConfig {
 			for (int y = h - 1; y >= 0; y--)
 				for (int x = 0; x < w; x++) {
 					int pixel = pixels[(h - 1 - y) * w + x]; // load pixel & flip them
-					buffer.put((byte) (pixel & 0xFF)); // red
-					buffer.put((byte) ((pixel >> 8) & 0xFF)); // green
 					buffer.put((byte) ((pixel >> 16) & 0xFF)); // blue
+					buffer.put((byte) ((pixel >> 8) & 0xFF)); // green
+					buffer.put((byte) (pixel & 0xFF)); // red
 					buffer.put((byte) ((pixel >> 24) & 0xFF)); // alpha
 				}
 			buffer.flip();
